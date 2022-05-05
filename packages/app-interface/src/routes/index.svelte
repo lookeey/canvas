@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Logo from 'src/assets/logo.svelte';
 	import TiArrowRightOutline from 'svelte-icons/ti/TiArrowRightOutline.svelte';
+	import { Button } from 'canvas-uikit';
 
 	var showLogo = false;
 	setTimeout(() => {
@@ -10,12 +11,12 @@
 
 <div class="wrapper">
 	<Logo visible={showLogo} width="65%" />
-	<button>
+	<Button>
 		play
 		<div class="icon">
 			<TiArrowRightOutline clas />
 		</div>
-	</button>
+	</Button>
 </div>
 
 <style lang="scss">
@@ -28,9 +29,5 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: space-evenly;
-	}
-
-	button {
-		font-size: 26pt;
 	}
 </style>
