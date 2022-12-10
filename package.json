@@ -1,7 +1,14 @@
 {
   "name": "root",
   "private": true,
-  "devDependencies": {
-    "lerna": "^4.0.0"
+  "workspaces": {
+    "packages": [
+      "packages/interface",
+      "packages/uikit"
+    ]
+  },
+  "dependencies": {
+    "lerna": "^6.1.0",
+    "styled-components": "^5.3.6"
   }
 }

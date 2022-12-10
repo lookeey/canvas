@@ -1,4 +1,5 @@
 node_modules
-/build
-/.svelte-kit
-lerna-debug.log
+.turbo
+build/**
+dist/**
+.next/**
