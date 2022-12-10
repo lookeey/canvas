@@ -10,7 +10,7 @@
   "sideEffects": false,
   "source": "src/index.ts",
   "engines": {
-    "node": ">=10"
+    "node": "^14"
   },
   "scripts": {
     "build": "tsc --project tsconfig.json && rollup -c",
