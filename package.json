@@ -7,6 +7,9 @@
       "uikit"
     ]
   },
+  "scripts": {
+    "build": "cd ./uikit && yarn build && cd ../interface && yarn build"
+  },
   "dependencies": {
     "styled-components": "^5.3.6"
   }
