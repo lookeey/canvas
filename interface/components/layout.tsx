@@ -9,7 +9,7 @@ import React, { PropsWithChildren } from "react";
 
 import Header from "./header";
 
-const Layout: React.FC<PropsWithChildren<never>> = ({ children }) => {
+const Layout: React.FC<PropsWithChildren<any>> = ({ children }) => {
   return (
     <>
       <Header /* siteTitle={data.site.siteMetadata?.title || `Title`} */ />
