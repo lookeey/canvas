@@ -3,12 +3,11 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "packages/interface",
-      "packages/uikit"
+      "interface",
+      "uikit"
     ]
   },
   "dependencies": {
-    "lerna": "^6.1.0",
     "styled-components": "^5.3.6"
   }
 }
