@@ -1,5 +1,6 @@
 "use client";
 
+import useCanvasControls from "hooks/useControls";
 import range from "lodash/range";
 import dynamic from "next/dynamic";
 import React, { useEffect, useRef, useState } from "react";
@@ -19,8 +20,9 @@ export interface CanvasViewProps {}
 
 const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
   const ref = useRef<HTMLCanvasElement>(null);
-  const [centerPos, setCenterPos] = useState({ x: 20, y: 20 });
-  const [zoom, setZoom] = useState(1);
+
+  const { zoom, centerPos } = useCanvasControls(ref);
+
   const [windowSize, setWindowSize] = useState({
     w: window?.innerWidth ?? 0,
     h: window?.innerHeight ?? 0,
@@ -39,59 +41,6 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
     });
   }, []);
 
-  const [dragging, setDragging] = useState(false);
-  const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    let canvas = ref.current;
-
-    const handleMouseDown = (e: MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setLastMousePos({ x: e.clientX, y: e.clientY });
-      setDragging(true);
-    };
-
-    const handleMouseUp = (e: MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setDragging(false);
-    };
-
-    const handleMove = (e: MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      if (dragging) {
-        setCenterPos({
-          x: centerPos.x + (e.clientX - lastMousePos.x) / zoom,
-          y: centerPos.y + (e.clientY - lastMousePos.y) / zoom,
-        });
-        setLastMousePos({
-          x: e.clientX,
-          y: e.clientY,
-        });
-      }
-    };
-
-    canvas.addEventListener("mousedown", handleMouseDown);
-    canvas.addEventListener("mouseup", handleMouseUp);
-    canvas.addEventListener("mousemove", handleMove);
-
-    return () => {
-      canvas.removeEventListener("mousedown", handleMouseDown);
-      canvas.removeEventListener("mouseup", handleMouseUp);
-      canvas.removeEventListener("mousemove", handleMove);
-    };
-  }, [
-    centerPos.x,
-    centerPos.y,
-    dragging,
-    lastMousePos.x,
-    lastMousePos.y,
-    zoom,
-  ]);
-
   useEffect(() => {
     let ctx = ref.current.getContext("2d", { alpha: false });
     let lastRAF = 0;
@@ -107,32 +56,27 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
         height: window.innerHeight / zoom,
       };
       let firstChunk = {
-        x: Math.floor((centerPos.x - pixelViewSize.width / 2) / 64 - 1),
-        y: Math.floor((centerPos.y - pixelViewSize.height / 2) / 64 - 1),
+        x: Math.floor((centerPos.x - pixelViewSize.width / 2) / 64),
+        y: Math.floor((centerPos.y - pixelViewSize.height / 2) / 64),
       };
       let lastChunk = {
-        x: Math.floor((centerPos.x + pixelViewSize.width / 2) / 64 + 1),
-        y: Math.floor((centerPos.y + pixelViewSize.height / 2) / 64 + 1),
+        x: Math.floor((centerPos.x + pixelViewSize.width / 2) / 64 + 2),
+        y: Math.floor((centerPos.y + pixelViewSize.height / 2) / 64 + 2),
       };
 
-      let chunksInView: { x: number; y: number }[] = [];
+      let offsetX = (ctx.canvas.width / (2 * zoom) + centerPos.x) % 64;
+      let offsetY = (ctx.canvas.height / (2 * zoom) + centerPos.y) % 64;
+
       range(firstChunk.x, lastChunk.x).forEach((x) => {
         range(firstChunk.y, lastChunk.y).forEach((y) => {
-          chunksInView.push({ x, y });
+          ctx.scale(zoom, zoom);
+          ctx.drawImage(
+            emptyImage,
+            (x - firstChunk.x - 1) * 64 + offsetX,
+            (y - firstChunk.y - 1) * 64 + offsetY
+          );
+          ctx.resetTransform();
         });
-      });
-
-      let offsetX = centerPos.x % (64 * zoom);
-      let offsetY = centerPos.y % (64 * zoom);
-
-      chunksInView.forEach((chunk) => {
-        ctx.scale(zoom, zoom);
-        ctx.drawImage(
-          emptyImage,
-          round((chunk.x - firstChunk.x - 1) * 64 + offsetX),
-          round((chunk.y - firstChunk.y - 1) * 64 + offsetY)
-        );
-        ctx.resetTransform();
       });
 
       lastRAF = window.requestAnimationFrame(draw);
