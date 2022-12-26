@@ -155,7 +155,10 @@ function useCanvasControls(ref: React.MutableRefObject<HTMLCanvasElement>) {
     }
     destinationZoom.current = Math.max(
       0.5,
-      Math.min(32, destinationZoom.current + e.deltaY * -0.005)
+      Math.min(
+        32,
+        destinationZoom.current + destinationZoom.current * (e.deltaY * -0.005)
+      )
     );
     animateZoom(destinationZoom.current, zoom);
   };

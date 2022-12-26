@@ -3,7 +3,7 @@
 import useCanvasControls from "hooks/useControls";
 import range from "lodash/range";
 import dynamic from "next/dynamic";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import { emptyImage } from "utils/drawChunk";
 import type { XYPos } from "utils/types";
@@ -41,6 +41,33 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
     });
   }, []);
 
+  const [firstChunk, lastChunk] = useMemo(() => {
+    let pixelViewSize = {
+      width: window.innerWidth / zoom,
+      height: window.innerHeight / zoom,
+    };
+    return [
+      {
+        x: Math.floor((centerPos.x - pixelViewSize.width / 2) / 64),
+        y: Math.floor((centerPos.y - pixelViewSize.height / 2) / 64),
+      },
+      {
+        x: Math.floor((centerPos.x + pixelViewSize.width / 2) / 64 + 2),
+        y: Math.floor((centerPos.y + pixelViewSize.height / 2) / 64 + 2),
+      },
+    ];
+  }, [centerPos.x, centerPos.y, zoom]);
+
+  const chunksInView = useMemo(() => {
+    let chunks = [];
+    range(firstChunk.x, lastChunk.x).forEach((x) => {
+      range(firstChunk.y, lastChunk.y).forEach((y) => {
+        chunks.push({ x, y });
+      });
+    });
+    return chunks;
+  }, [firstChunk.x, firstChunk.y, lastChunk.x, lastChunk.y]);
+
   useEffect(() => {
     let ctx = ref.current.getContext("2d", { alpha: false });
     let lastRAF = 0;
@@ -51,32 +78,17 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
         ctx.clearRect(0, 0, ref.current.width, ref.current.height);
       }
 
-      let pixelViewSize = {
-        width: window.innerWidth / zoom,
-        height: window.innerHeight / zoom,
-      };
-      let firstChunk = {
-        x: Math.floor((centerPos.x - pixelViewSize.width / 2) / 64),
-        y: Math.floor((centerPos.y - pixelViewSize.height / 2) / 64),
-      };
-      let lastChunk = {
-        x: Math.floor((centerPos.x + pixelViewSize.width / 2) / 64 + 2),
-        y: Math.floor((centerPos.y + pixelViewSize.height / 2) / 64 + 2),
-      };
-
       let offsetX = (ctx.canvas.width / (2 * zoom) + centerPos.x) % 64;
       let offsetY = (ctx.canvas.height / (2 * zoom) + centerPos.y) % 64;
 
-      range(firstChunk.x, lastChunk.x).forEach((x) => {
-        range(firstChunk.y, lastChunk.y).forEach((y) => {
-          ctx.scale(zoom, zoom);
-          ctx.drawImage(
-            emptyImage,
-            (x - firstChunk.x - 1) * 64 + offsetX,
-            (y - firstChunk.y - 1) * 64 + offsetY
-          );
-          ctx.resetTransform();
-        });
+      chunksInView.forEach((chunk) => {
+        ctx.scale(zoom, zoom);
+        ctx.drawImage(
+          emptyImage,
+          (chunk.x - firstChunk.x - 1) * 64 + offsetX,
+          (chunk.y - firstChunk.y - 1) * 64 + offsetY
+        );
+        ctx.resetTransform();
       });
 
       lastRAF = window.requestAnimationFrame(draw);
@@ -87,7 +99,14 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
     return () => {
       window.cancelAnimationFrame(lastRAF);
     };
-  }, [centerPos.x, centerPos.y, zoom]);
+  }, [
+    centerPos.x,
+    centerPos.y,
+    chunksInView,
+    firstChunk.x,
+    firstChunk.y,
+    zoom,
+  ]);
 
   return (
     <Canvas width={windowSize.w} height={windowSize.h} ref={ref}>
