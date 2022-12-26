@@ -4,7 +4,7 @@ import useCanvasControls from "hooks/useControls";
 import range from "lodash/range";
 import dynamic from "next/dynamic";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import { emptyImage } from "utils/drawChunk";
 import type { XYPos } from "utils/types";
 

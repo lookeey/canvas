@@ -18,7 +18,7 @@ export default [
         preserveModulesRoot: 'src'
       }
     ],
-    external: ['styled-components'],
+    external: ['@emotion/react', '@emotion/styled'],
     plugins: [
       // This prevents needing an additional `external` prop in this config file by automaticall excluding peer dependencies
       peerDepsExternal({

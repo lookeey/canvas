@@ -1,5 +1,5 @@
 import React, { SVGProps } from 'react'
-import { useTheme } from 'styled-components'
+import { useTheme } from '@emotion/react'
 
 const Logo = ({ style, ...props }: SVGProps<SVGSVGElement>) => {
   const theme = useTheme()

@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from "react"
-import styled, { keyframes } from "styled-components"
-import Lottie, { LottieRef } from "lottie-react"
+import React, { useEffect, useRef, useState } from "react";
+import styled from "@emotion/styled";
+import { keyframes } from "@emotion/css";
+import Lottie, { LottieRef } from "lottie-react";
 
-import topAnimation from "../components/lottie/top.json"
-import bottomAnimation from "../components/lottie/bottom.json"
+import topAnimation from "../components/lottie/top.json";
+import bottomAnimation from "../components/lottie/bottom.json";
 
 const bgHue = keyframes`
   0% {
@@ -18,7 +19,7 @@ const bgHue = keyframes`
   100% {
     filter: hue-rotate(0deg);
   }
-`
+`;
 
 const Background = styled.div`
   position: absolute;
@@ -44,30 +45,30 @@ const Background = styled.div`
   }
 
   animation: ${bgHue} 20s infinite;
-`
+`;
 
-const HeroBackground: React.FC = props => {
-  const lottieRefs: LottieRef[] = [useRef(null), useRef(null)]
-  const [animationReversed, setReverseAnimation] = useState(false)
+const HeroBackground: React.FC = (props) => {
+  const lottieRefs: LottieRef[] = [useRef(null), useRef(null)];
+  const [animationReversed, setReverseAnimation] = useState(false);
 
   const reverseAnimation = () => {
-    lottieRefs.forEach(lottieRef => {
+    lottieRefs.forEach((lottieRef) => {
       if (lottieRef?.current) {
-        setReverseAnimation(!animationReversed)
+        setReverseAnimation(!animationReversed);
         lottieRef.current.playSegments(
           animationReversed ? [100, 241] : [241, 100],
           true
-        )
+        );
       }
-    })
-  }
+    });
+  };
   return (
     <Background>
       <Lottie
         animationData={topAnimation}
         lottieRef={lottieRefs[0] as any}
         onLoopComplete={() => {
-          reverseAnimation()
+          reverseAnimation();
         }}
         className="top-right"
       />
@@ -75,11 +76,11 @@ const HeroBackground: React.FC = props => {
         animationData={bottomAnimation}
         lottieRef={lottieRefs[1] as any}
         onLoopComplete={() => {
-          reverseAnimation()
+          reverseAnimation();
         }}
         className="bottom-left"
       />
     </Background>
-  )
-}
-export default HeroBackground
+  );
+};
+export default HeroBackground;

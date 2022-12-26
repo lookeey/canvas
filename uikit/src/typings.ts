@@ -1,11 +1,11 @@
-import 'styled-components'
+import '@emotion/react'
 import { theme } from './config/theme'
 
 export type ThemeType = ReturnType<typeof theme>
 
-declare module 'styled-components' {
+declare module '@emotion/react' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  export interface DefaultTheme extends ThemeType {}
+  export interface Theme extends ThemeType {}
 }
 
 export {}

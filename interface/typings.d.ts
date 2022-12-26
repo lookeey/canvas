@@ -1,5 +1,5 @@
 import type { ThemeType } from "canvas-uikit";
 
-declare module "styled-components" {
-  export interface DefaultTheme extends ThemeType {}
+declare module "@emotion/react" {
+  export interface Theme extends ThemeType {}
 }

@@ -2,7 +2,7 @@ import EnterPageAnimation from "components/EnterPageAnimation";
 import { GetServerSideProps } from "next/types";
 import { setCookie, hasCookie } from "cookies-next";
 import React from "react";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import CanvasView from "components/CanvasView";
 
 const Wrapper = styled.div`

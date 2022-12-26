@@ -2,7 +2,7 @@ const { ResetCSS } = require('../src/util');
 
 const React = require('react')
 const { theme } = require('../src/config/theme')
-const { ThemeProvider } = require('styled-components')
+const { ThemeProvider } = require('@emotion/react')
 const { addDecorator } = require('@storybook/react'); // <- or your storybook framework
 const { withThemes } = require('storybook-addon-themes/react'); // <- or your storybook framework
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 
 const Wrapper = styled.div<{ fade: boolean }>`
   position: fixed;

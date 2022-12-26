@@ -1,6 +1,6 @@
 import { ResetCSS, theme } from "canvas-uikit";
 import type { AppProps } from "next/app";
-import { ThemeProvider } from "styled-components";
+import { ThemeProvider } from "@emotion/react";
 import { Provider } from "react-redux";
 import store from "state";
 

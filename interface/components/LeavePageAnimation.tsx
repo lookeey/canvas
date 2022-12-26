@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from "react"
-import styled from "styled-components"
-import Lottie, { LottieRef } from "lottie-react"
-import anim from "./lottie/enter-game.json"
+import React, { useEffect, useRef } from "react";
+import styled from "@emotion/styled";
+import Lottie, { LottieRef } from "lottie-react";
+import anim from "./lottie/enter-game.json";
 
 const Wrapper = styled.div`
   position: fixed;
@@ -31,28 +31,28 @@ const Wrapper = styled.div`
       }
     }
   }
-`
+`;
 
 export interface ILeavePageAnimationProps {
-  show: boolean
+  show: boolean;
 }
 
 const LeavePageAnimation: React.FC<ILeavePageAnimationProps> = ({
   show,
 }: ILeavePageAnimationProps) => {
-  const lottieRef: LottieRef = useRef(null)
+  const lottieRef: LottieRef = useRef(null);
 
   useEffect(() => {
     if (lottieRef.current) {
-      let ref = lottieRef.current
-      ref.setSpeed(0.9)
+      let ref = lottieRef.current;
+      ref.setSpeed(0.9);
       if (!show) {
-        ref.goToAndStop(0)
+        ref.goToAndStop(0);
       } else {
-        ref.play()
+        ref.play();
       }
     }
-  }, [show])
+  }, [show]);
 
   return (
     <>
@@ -68,6 +68,6 @@ const LeavePageAnimation: React.FC<ILeavePageAnimationProps> = ({
         </Wrapper>
       )}
     </>
-  )
-}
-export default LeavePageAnimation
+  );
+};
+export default LeavePageAnimation;
