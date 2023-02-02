@@ -1,16 +1,13 @@
 "use client";
 
 import useCanvasControls from "hooks/useControls";
-import range from "lodash/range";
 import dynamic from "next/dynamic";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import styled from "@emotion/styled";
 import { emptyImage } from "utils/drawChunk";
-import type { XYPos } from "utils/types";
-
-function round(n: number) {
-  return (n + 0.5) << 0;
-}
+import useChunkData from "hooks/useChunkData";
+import { bi, range } from "utils/chunk";
+import { XYPos } from "utils/types";
 
 const Canvas = styled.canvas`
   image-rendering: pixelated;
@@ -28,10 +25,6 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
     h: window?.innerHeight ?? 0,
   });
 
-  const chunksData = useRef<{ [key: number]: { [key: number]: ImageData } }>(
-    {}
-  );
-
   useEffect(() => {
     window.addEventListener("resize", () => {
       setWindowSize({
@@ -48,23 +41,26 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
     };
     return [
       {
-        x: Math.floor((centerPos.x - pixelViewSize.width / 2) / 64),
-        y: Math.floor((centerPos.y - pixelViewSize.height / 2) / 64),
+        x: bi((-centerPos.x - pixelViewSize.width / 2) / 64),
+        y: bi((-centerPos.y - pixelViewSize.height / 2) / 64),
       },
       {
-        x: Math.floor((centerPos.x + pixelViewSize.width / 2) / 64 + 2),
-        y: Math.floor((centerPos.y + pixelViewSize.height / 2) / 64 + 2),
+        x: bi((-centerPos.x + pixelViewSize.width / 2) / 64 + 2),
+        y: bi((-centerPos.y + pixelViewSize.height / 2) / 64 + 2),
       },
     ];
   }, [centerPos.x, centerPos.y, zoom]);
 
+  const chunksData = useChunkData(firstChunk, lastChunk);
+
   const chunksInView = useMemo(() => {
-    let chunks = [];
+    let chunks: XYPos[] = [];
     range(firstChunk.x, lastChunk.x).forEach((x) => {
       range(firstChunk.y, lastChunk.y).forEach((y) => {
         chunks.push({ x, y });
       });
     });
+    console.log(firstChunk.x);
     return chunks;
   }, [firstChunk.x, firstChunk.y, lastChunk.x, lastChunk.y]);
 
@@ -84,9 +80,11 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
       chunksInView.forEach((chunk) => {
         ctx.scale(zoom, zoom);
         ctx.drawImage(
-          emptyImage,
-          (chunk.x - firstChunk.x - 1) * 64 + offsetX,
-          (chunk.y - firstChunk.y - 1) * 64 + offsetY
+          chunksData[`${chunk.x}.${chunk.y}`] ?? emptyImage,
+          Number(chunk.x - firstChunk.x - (offsetX >= 0 ? 1n : 0n)) * 64 +
+            offsetX,
+          Number(chunk.y - firstChunk.y - (offsetY >= 0 ? 1n : 0n)) * 64 +
+            offsetY
         );
         ctx.resetTransform();
       });
@@ -102,6 +100,7 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
   }, [
     centerPos.x,
     centerPos.y,
+    chunksData,
     chunksInView,
     firstChunk.x,
     firstChunk.y,

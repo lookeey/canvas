@@ -1,4 +1,6 @@
+import BigNumber from "bignumber.js";
+
 export type XYPos = {
-  x: number;
-  y: number;
+  x: bigint;
+  y: bigint;
 };

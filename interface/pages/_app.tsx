@@ -1,16 +1,16 @@
 import { ResetCSS, theme } from "canvas-uikit";
 import type { AppProps } from "next/app";
 import { ThemeProvider } from "@emotion/react";
-import { Provider } from "react-redux";
-import store from "state";
+import { ApolloProvider } from "@apollo/client";
+import graphClient from "utils/apolloClient";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider theme={theme("dark")}>
-      <Provider store={store}>
+      <ApolloProvider client={graphClient}>
         <Component {...pageProps} />
-      </Provider>
-      <ResetCSS />
+        <ResetCSS />
+      </ApolloProvider>
     </ThemeProvider>
   );
 }

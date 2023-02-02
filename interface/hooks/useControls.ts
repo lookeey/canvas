@@ -19,7 +19,7 @@ function easeOutExpo(
 
 function useCanvasControls(ref: React.MutableRefObject<HTMLCanvasElement>) {
   const [centerPos, setCenterPos] = useState({ x: 0, y: 0 });
-  const [zoom, _setZoom] = useState(2);
+  const [zoom, _setZoom] = useState(6);
   const setZoom = (zoom: number) => {
     _setZoom(Math.max(0.5, Math.min(zoom)));
   };
@@ -32,8 +32,8 @@ function useCanvasControls(ref: React.MutableRefObject<HTMLCanvasElement>) {
   const destinationZoom = useRef<number>(null);
 
   function momentum(
-    initialSpeed: XYPos,
-    initialPosition: XYPos,
+    initialSpeed: { x: number; y: number },
+    initialPosition: { x: number; y: number },
     startTime?: number,
     timestamp?: number
   ) {
@@ -138,8 +138,8 @@ function useCanvasControls(ref: React.MutableRefObject<HTMLCanvasElement>) {
         y: centerPos.y + mouseDelta.y / zoom,
       });
       setMouseSpeed({
-        x: mouseDelta.x / (Date.now() - lastMouseEventTime),
-        y: mouseDelta.y / (Date.now() - lastMouseEventTime),
+        x: mouseDelta.x / (Date.now() - lastMouseEventTime) / zoom,
+        y: mouseDelta.y / (Date.now() - lastMouseEventTime) / zoom,
       });
       setLastMouseEventTime(Date.now());
       setLastMousePos({
@@ -157,7 +157,8 @@ function useCanvasControls(ref: React.MutableRefObject<HTMLCanvasElement>) {
       0.5,
       Math.min(
         32,
-        destinationZoom.current + destinationZoom.current * (e.deltaY * -0.005)
+        (destinationZoom.current ?? zoom) +
+          (destinationZoom.current ?? zoom) * (e.deltaY * -0.005)
       )
     );
     animateZoom(destinationZoom.current, zoom);
