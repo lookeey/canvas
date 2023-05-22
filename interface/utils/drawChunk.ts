@@ -1,38 +1,49 @@
 import palettes from "config/palettes";
-import SnappyJS from "snappyjs";
+import pako from "pako";
+import {atob} from "next/dist/compiled/@edge-runtime/primitives/encoding";
+import { CHUNK_SIZE } from "../config/chunk";
 
-type ChunkData = string;
+let emptyImage;
 
-export const fromHexString = (hexString: string) =>
-  Uint8Array.from(hexString.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
+let arr = new Uint8ClampedArray(CHUNK_SIZE * CHUNK_SIZE * 4);
+  arr.set([12, 230, 1, 255, 12, 230, 1, 255, 12, 230, 1, 255, 12, 230, 1, 255, 12, 230, 1, 255,12, 230, 1, 255, 12, 230, 1, 255, 12, 230, 1, 255, 12, 230, 1, 255, 12, 230, 1, 255, 12, 230, 1, 255, ], 0);
+
+if (typeof window !== "undefined") {
+  createImageBitmap(
+    new ImageData(arr, CHUNK_SIZE, CHUNK_SIZE)
+  ).then((img) => (emptyImage = img));
+}
 
 function byteToColor(byte: number) {
   let color = palettes.default[byte];
   return [...color, 255];
 }
 
-export default function uncompress(chunkData: ChunkData) {
-  let rawData = SnappyJS.uncompress(fromHexString(chunkData));
-  let data = Uint8Array.from(rawData);
+function stringToBinary(str: string) {
+  let bytes = new Uint8Array(str.length);
+  for (var i = 0; i < str.length; i++) {
+    bytes[i] = str.charCodeAt(i);
+  }
+  return bytes;
+}
 
-  let imageData = new Uint8ClampedArray(64 * 64 * 4);
+export function base64ToImageData(source: string) {
+  let rawData = stringToBinary(atob(source));
+  let data = pako.inflate(rawData);
+  let imageData = new Uint8ClampedArray(CHUNK_SIZE * CHUNK_SIZE * 4);
   data.forEach((byte, idx) => {
     imageData.set(byteToColor(byte), idx * 4);
   });
-
-  return Uint8ClampedArray.from(imageData);
+  return createImageBitmap(new ImageData(imageData, CHUNK_SIZE, CHUNK_SIZE));
 }
 
-let emptyImage;
-
-if (typeof window !== "undefined") {
-  createImageBitmap(
-    new ImageData(Uint8ClampedArray.from(Array(64 * 64 * 4).fill(0xff)), 64, 64)
-  ).then((img) => (emptyImage = img));
-}
-
-export function hexToImageData(hex: string) {
-  return createImageBitmap(new ImageData(uncompress(hex.slice(2)), 64, 64));
+export function uint8ArrayToImageData(rawData: Uint8Array) {
+  let data = pako.inflate(rawData);
+  let imageData = new Uint8ClampedArray(CHUNK_SIZE * CHUNK_SIZE * 4);
+  data.forEach((byte, idx) => {
+    imageData.set(byteToColor(byte), idx * 4);
+  });
+  return createImageBitmap(new ImageData(imageData, CHUNK_SIZE, CHUNK_SIZE));
 }
 
 export { emptyImage };

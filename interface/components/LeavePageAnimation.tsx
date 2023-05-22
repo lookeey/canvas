@@ -14,12 +14,16 @@ const Wrapper = styled.div`
   & > div {
     position: absolute;
     height: 100%;
-    left: 50%;
-    transform: translateX(-50%);
+    width: 100%;
 
     svg {
       width: auto !important;
       height: auto !important;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) !important;
+      
       .sq path {
         fill: ${({ theme }) => theme.bg} !important;
         stroke: ${({ theme }) => theme.bg};

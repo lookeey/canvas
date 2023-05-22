@@ -45,7 +45,7 @@ const links = [
 
   {
     label: "Twitter",
-    href: "https://docs.canvass.com",
+    href: "https://twitter.com/0xc4nvas",
   },
 ];
 

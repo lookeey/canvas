@@ -4,6 +4,7 @@ import { setCookie, hasCookie } from "cookies-next";
 import React from "react";
 import styled from "@emotion/styled";
 import CanvasView from "components/CanvasView";
+import ColorPicker from "../components/ColorPicker";
 
 const Wrapper = styled.div`
   position: fixed;
@@ -18,6 +19,7 @@ const Game: React.FC<IGameProps> = (props: IGameProps) => {
     <Wrapper>
       <EnterPageAnimation />
       <CanvasView />
+      <ColorPicker selectedColor={3}/>
     </Wrapper>
   );
 };

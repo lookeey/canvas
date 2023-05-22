@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { XYPos } from "utils/types";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/router";
 
 const ACCELERATION = -0.0005;
 const MAX_SPEED = 1;
 const ZOOM_DURATION = 1000;
+const MIN_ZOOM = 1;
 
 function easeOutExpo(
   elapsed: number,
@@ -18,11 +21,31 @@ function easeOutExpo(
 }
 
 function useCanvasControls(ref: React.MutableRefObject<HTMLCanvasElement>) {
+  const router = useRouter();
+
   const [centerPos, setCenterPos] = useState({ x: 0, y: 0 });
   const [zoom, _setZoom] = useState(6);
+
+  useEffect(() => {
+    const posQuery = router.asPath  ;
+    if (posQuery) {
+      console.log(posQuery)
+      let [, x, y, zoom] = /@(.*),(.*)\?z=(.*)/.exec(posQuery);
+      console.log("AAA", x, y, zoom);
+      setCenterPos({ x: Number(x), y: Number(y) });
+      setZoom(Number(zoom));
+    }
+  }, []);
+
   const setZoom = (zoom: number) => {
-    _setZoom(Math.max(0.5, Math.min(zoom)));
+    _setZoom(Math.max(1, zoom));
   };
+
+  const updateUrl = (x, y, zoom) => {
+    router.replace(
+      location.href.replace(/@.*/, "") + `@${Math.round(x)},${Math.round(y)}?z=${zoom.toFixed(1)}`, undefined, { shallow: true }
+    )
+  }
 
   const [dragging, setDragging] = useState(false);
   const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 });
@@ -102,6 +125,8 @@ function useCanvasControls(ref: React.MutableRefObject<HTMLCanvasElement>) {
       lastZoomRAF.current = window.requestAnimationFrame((time) => {
         animateZoom(dest, initialZoom, startTime, time);
       });
+    } else {
+      updateUrl(centerPos.x, centerPos.y, Math.max(1, dest))
     }
   }
 
@@ -122,6 +147,7 @@ function useCanvasControls(ref: React.MutableRefObject<HTMLCanvasElement>) {
     if (Date.now() - lastMouseEventTime <= 50) {
       momentum(mouseSpeed, centerPos);
     }
+    updateUrl(centerPos.x, centerPos.y, zoom)
   };
 
   const handleMove = (e: MouseEvent) => {
@@ -142,11 +168,12 @@ function useCanvasControls(ref: React.MutableRefObject<HTMLCanvasElement>) {
         y: mouseDelta.y / (Date.now() - lastMouseEventTime) / zoom,
       });
       setLastMouseEventTime(Date.now());
-      setLastMousePos({
-        x: e.clientX,
-        y: e.clientY,
-      });
+
     }
+    setLastMousePos({
+      x: e.clientX,
+      y: e.clientY,
+    });
   };
 
   const handleWheel = (e: WheelEvent) => {
@@ -183,6 +210,7 @@ function useCanvasControls(ref: React.MutableRefObject<HTMLCanvasElement>) {
   return {
     zoom,
     centerPos,
+    mousePos: lastMousePos,
   };
 }
 

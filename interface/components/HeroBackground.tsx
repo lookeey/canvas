@@ -1,10 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/css";
-import Lottie, { LottieRef } from "lottie-react";
-
-import topAnimation from "../components/lottie/top.json";
-import bottomAnimation from "../components/lottie/bottom.json";
+import { BottomLeftBlocks, TopRightBlocks } from "./SVG/Blocks";
 
 const bgHue = keyframes`
   0% {
@@ -22,6 +19,8 @@ const bgHue = keyframes`
 `;
 
 const Background = styled.div`
+  display: flex;
+  justify-content: space-between;
   position: absolute;
   top: 0;
   left: 0;
@@ -34,7 +33,7 @@ const Background = styled.div`
     opacity: 0.35;
   }
 
-  .bottom-left {
+   {
     left: 0;
     bottom: 0;
   }
@@ -48,39 +47,75 @@ const Background = styled.div`
 `;
 
 const HeroBackground: React.FC = (props) => {
-  const lottieRefs: LottieRef[] = [useRef(null), useRef(null)];
-  const [animationReversed, setReverseAnimation] = useState(false);
-
-  const reverseAnimation = () => {
-    lottieRefs.forEach((lottieRef) => {
-      if (lottieRef?.current) {
-        setReverseAnimation(!animationReversed);
-        lottieRef.current.playSegments(
-          animationReversed ? [100, 241] : [241, 100],
-          true
-        );
-      }
-    });
-  };
   return (
     <Background>
-      <Lottie
-        animationData={topAnimation}
-        lottieRef={lottieRefs[0] as any}
-        onLoopComplete={() => {
-          reverseAnimation();
-        }}
-        className="top-right"
-      />
-      <Lottie
-        animationData={bottomAnimation}
-        lottieRef={lottieRefs[1] as any}
-        onLoopComplete={() => {
-          reverseAnimation();
-        }}
-        className="bottom-left"
-      />
+      <AnimatedBlocks variant="top-right" style={{height: "100%"}} />
+      <AnimatedBlocks variant="bottom-left" style={{height: "100%"}}/>
     </Background>
   );
 };
+
+const StyledSvg = styled.svg`
+  * {
+    transition: all 1.5s;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+`;
+
+const AnimatedBlocks: React.FC<{
+  variant: "top-right" | "bottom-left";
+} & React.SVGProps<SVGSVGElement>> = ({
+  variant,
+  ...props
+}) => {
+  const ref = useRef<SVGSVGElement>(null);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    const svg = ref.current;
+    const children = Array.from(svg.children);
+    let timeouts: number[] = [];
+    let intervals: number[] = [];
+
+    children.forEach((rect: SVGElement, idx) => {
+      rect.style.transformBox = "fill-box";
+      rect.style.transformOrigin = "center";
+
+      timeouts.push(
+        // @ts-ignore
+        setTimeout(() => {
+          function setRandomSizeOpacity() {
+            rect.style.fillOpacity = Math.random() * 0.5 + 0.5 + "";
+            rect.style.transform = `scale(${Math.random() * 0.1 + 0.9})`;
+          }
+          setRandomSizeOpacity();
+          // @ts-ignore
+          intervals.push(setInterval(setRandomSizeOpacity, 4000));
+        }, idx * 80)
+      );
+    });
+
+    return () => {
+      timeouts.forEach((timeout) => clearTimeout(timeout));
+      intervals.forEach((interval) => clearInterval(interval));
+    };
+  }, []);
+
+  return (
+    <StyledSvg
+      viewBox="0 0 403 510"
+      version="1.1"
+      opacity={0.35}
+      xmlns="http://www.w3.org/2000/svg"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      xmlSpace="preserve"
+      ref={ref}
+      {...props}
+    >
+      {variant === "top-right" ? <TopRightBlocks /> : <BottomLeftBlocks />}
+    </StyledSvg>
+  );
+};
+
 export default HeroBackground;
