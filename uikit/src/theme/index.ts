@@ -20,5 +20,9 @@ export const theme = (mode: 'dark' | 'light') =>
     },
     fontSizes: {},
     fontWeights: {},
-    lineHeights: {}
+    lineHeights: {},
+    config: {
+      initialColorMode: 'mode',
+      useSystemColorMode: false
+    }
   })
