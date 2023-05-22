@@ -18,7 +18,7 @@ export default [
         preserveModulesRoot: 'src'
       }
     ],
-    external: ['@emotion/react', '@emotion/styled'],
+    external: ['@emotion/react', '@emotion/styled', '@chakra-ui/react'],
     plugins: [
       // This prevents needing an additional `external` prop in this config file by automaticall excluding peer dependencies
       peerDepsExternal({

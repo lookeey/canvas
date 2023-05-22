@@ -1,6 +1,6 @@
 const dark = {
   primary: '#000000',
-  bg: '#202020',
+  bg: '#1a1a1a',
   text: '#eaeaea',
   secondary: '#afafaf',
   blue1: '#0f45c0',

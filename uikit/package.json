@@ -21,12 +21,15 @@
     "predeploy": "cd example && yarn install && yarn run build",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "typegen": "chakra-cli tokens theme/index.ts",
-    "typegen:watch": "chakra-cli tokens theme/index.ts --watch"
+    "typegen": "chakra-cli tokens src/theme/index.ts",
+    "typegen:watch": "chakra-cli tokens src/theme/index.ts --watch"
   },
   "types": "./dist/index.d.ts",
   "peerDependencies": {
-    "react": "^16.0.0"
+    "react": "^16.0.0",
+    "@chakra-ui/react": "^2.6.1",
+    "@emotion/react": "^11.11.0",
+    "@emotion/styled": "^11.11.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.5",
@@ -79,12 +82,7 @@
     "storybook": "7.0.12",
     "storybook-addon-theme-provider": "^0.1.10",
     "tsconfig-paths-webpack-plugin": "^4.0.0",
-    "util": "^0.12.5"
-  },
-  "dependencies": {
-    "@chakra-ui/react": "^2.6.1",
-    "@emotion/react": "^11.11.0",
-    "@emotion/styled": "^11.11.0",
+    "util": "^0.12.5",
     "vite": "^4.3.8"
   },
   "eslintConfig": {

@@ -1,74 +1,61 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { ComponentProps, useEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
-import { keyframes } from "@emotion/css";
+import { keyframes } from "@chakra-ui/react";
 import { BottomLeftBlocks, TopRightBlocks } from "./SVG/Blocks";
+import {
+  Box,
+  chakra,
+} from "@chakra-ui/react";
 
 const bgHue = keyframes`
-  0% {
-    filter: hue-rotate(0deg);
-  }
-  25% {
-    filter: hue-rotate(45deg);
-  }
-  75% {
-    filter: hue-rotate(-45deg)
-  }
-  100% {
-    filter: hue-rotate(0deg);
-  }
-`;
-
-const Background = styled.div`
-  display: flex;
-  justify-content: space-between;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-
-  & > div {
-    position: absolute;
-    opacity: 0.35;
-  }
-
-   {
-    left: 0;
-    bottom: 0;
-  }
-
-  .top-right {
-    right: 0;
-    top: 0;
-  }
-
-  animation: ${bgHue} 20s infinite;
+  0%{background-position:0% 82%}
+  50%{background-position:100% 19%}
+  100%{background-position:0% 82%}
 `;
 
 const HeroBackground: React.FC = (props) => {
   return (
-    <Background>
-      <AnimatedBlocks variant="top-right" style={{height: "100%"}} />
-      <AnimatedBlocks variant="bottom-left" style={{height: "100%"}}/>
-    </Background>
+    <Box
+      position={"absolute"}
+      width={"100%"}
+      height={"100%"}
+      zIndex={"-2"}
+    >
+      <Box
+        bg={"linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3)"}
+        bgSize={"500% 500%"}
+        animation={`${bgHue} 12s ease infinite`}
+        position={"absolute"}
+        width={"100%"}
+        height={"100%"}
+        opacity={"0.05"}
+        zIndex={"-3"}
+      />
+      <Box
+        top={"0"}
+        left={"0"}
+        width={"100%"}
+        height={"100%"}
+        position={"absolute"}>
+        <AnimatedBlocks variant="top-right" height={["50%", null, "75%", "90%"]} position="absolute"  bottom={0} left={0}/>
+      </Box>
+      <Box
+        top={"0"}
+        left={"0"}
+        width={"100%"}
+        height={"100%"}
+        position={"absolute"}>
+        <AnimatedBlocks variant="bottom-left" height={["50%", null, "75%", "90%"]} position="absolute" top={0} right={0} />
+      </Box>
+    </Box>
   );
 };
 
-const StyledSvg = styled.svg`
-  * {
-    transition: all 1.5s;
-    transform-box: fill-box;
-    transform-origin: center;
+const AnimatedBlocks: React.FC<
+  ComponentProps<typeof chakra.svg> & {
+    variant: "top-right" | "bottom-left";
   }
-`;
-
-const AnimatedBlocks: React.FC<{
-  variant: "top-right" | "bottom-left";
-} & React.SVGProps<SVGSVGElement>> = ({
-  variant,
-  ...props
-}) => {
+> = ({ variant, ...props }) => {
   const ref = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
@@ -103,18 +90,27 @@ const AnimatedBlocks: React.FC<{
   }, []);
 
   return (
-    <StyledSvg
-      viewBox="0 0 403 510"
+    <chakra.svg
+      viewBox={`0 0 403 ${variant === "bottom-left" ? 510 : 490}`}
       version="1.1"
-      opacity={0.35}
+      opacity={0.28}
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
       xmlSpace="preserve"
+      zIndex={"-2"}
+      sx={{
+        "*": {
+          transformBox: "fill-box",
+          transition: "all 1.5s",
+          transformOrigin: "center",
+        },
+        ...props.sx,
+      }}
       ref={ref}
       {...props}
     >
       {variant === "top-right" ? <TopRightBlocks /> : <BottomLeftBlocks />}
-    </StyledSvg>
+    </chakra.svg>
   );
 };
 

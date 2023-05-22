@@ -6,7 +6,7 @@ const splashes: (string | TypeAnimationProps["sequence"])[] = [
   "Sponsored by Cling.",
   "New updates daily.",
   "Greatest innovation on Fantom since HOLO!",
-  "Growing fast as Andre's eyebags!",
+  "Growing as fast as Andre's eyebags!",
   "POOOMP",
   "You have now been blackmailed.",
   "As big as CrescoFin",
@@ -23,7 +23,7 @@ const splashes: (string | TypeAnimationProps["sequence"])[] = [
   "As explained by Head of US operations!",
   "Now without Andre!",
   "Now with Andre!",
-  "Totally decentralized!",
+  "Absolutely decentralized!",
   "fInally! fArt!",
   "As seen on some F1 car idk",
   "Is that his only picture?",
@@ -38,7 +38,7 @@ const splashes: (string | TypeAnimationProps["sequence"])[] = [
   ".c fusd 1d",
   ".c ice 5m",
   ".c tshare 1w",
-  "0x prefixes are dumb, overused, lazy, lame, stupid, reta"
+  "trust me bro"
 ]
 
 export default splashes;

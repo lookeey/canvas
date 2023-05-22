@@ -135,6 +135,12 @@ const variants = {
 }
 
 const sizes = {
+  xl: defineStyle({
+    h: '14',
+    minW: '14',
+    fontSize: 'xl',
+    px: '6'
+  }),
   lg: defineStyle({
     h: '12',
     minW: '12',

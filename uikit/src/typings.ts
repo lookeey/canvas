@@ -1,5 +1,5 @@
 import '@emotion/react'
-import { theme } from './config/theme'
+import { theme } from './theme'
 
 export type ThemeType = ReturnType<typeof theme>
 

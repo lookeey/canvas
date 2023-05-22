@@ -1,46 +1,16 @@
-import styled from "@emotion/styled";
 import Link from "next/link";
 import React from "react";
 import { Logo } from "canvas-uikit";
-
-const Wrapper = styled.header`
-  position: sticky;
-  top: 0;
-  display: flex;
-  justify-content: center;
-  height: 72px;
-  width: 100%;
-
-  .inner {
-    display: flex;
-    width: 100%;
-    max-width: 1600px;
-    height: 100%;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 24px;
-  }
-`;
-
-const LinkList = styled.ul`
-  li {
-    display: inline-block;
-    padding-left: 0.8rem;
-
-    a {
-      text-decoration: none;
-    }
-  }
-`;
+import { Box, List, ListItem } from "@chakra-ui/react";
 
 const links = [
   {
     label: "Docs",
-    href: "https://docs.canvass.com",
+    href: "https://canvas-2.gitbook.io/docs",
   },
   {
     label: "Discord",
-    href: "https://docs.canvass.com",
+    href: "https://discord.gg/Z5mZ6EYerr",
   },
 
   {
@@ -50,18 +20,44 @@ const links = [
 ];
 
 const Header: React.FC<{}> = ({}) => (
-  <Wrapper>
-    <div className="inner">
+  <Box
+    as="header"
+    position="sticky"
+    top="0"
+    display="flex"
+    justifyContent="center"
+    height="72px"
+    width="100%"
+    zIndex="100"
+  >
+    <Box
+      display="flex"
+      width="100%"
+      maxWidth="1600px"
+      height="100%"
+      justifyContent="space-between"
+      alignItems="center"
+      padding="0 24px"
+    >
       <Logo height="48px" />
-      <LinkList>
+      <List
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100%"
+        margin="0"
+        padding="0"
+        listStyleType="none"
+        gap={2}
+      >
         {links.map(({ label, href }, idx) => (
-          <li key={idx}>
+          <ListItem key={idx}>
             <Link href={href}>{label}</Link>
-          </li>
+          </ListItem>
         ))}
-      </LinkList>
-    </div>
-  </Wrapper>
+      </List>
+    </Box>
+  </Box>
 );
 
 export default Header;
