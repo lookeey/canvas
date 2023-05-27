@@ -15,7 +15,7 @@ if (typeof window !== "undefined") {
 }
 
 function byteToColor(byte: number) {
-  let color = palettes.default[byte];
+  let color = palettes.default[byte] || [0, 0, 0]
   return [...color, 255];
 }
 

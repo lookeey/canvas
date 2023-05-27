@@ -8,7 +8,7 @@ const CACHE_INV_TIME = 10000
 
 async function queryChunk(pos: XYPos): Promise<Uint8Array | null> {
   const res = await fetch(
-    `http://localhost:8081/${pos.x.toString()}.${pos.y.toString()}.chunk`,
+    `https://araras.b-cdn.net//${pos.x.toString()}.${pos.y.toString()}.chunk`,
     {
       method: "GET",
       cache: "no-store"
@@ -41,8 +41,8 @@ function useChunkData(firstChunk: XYPos, lastChunk: XYPos) {
 
   useEffect(() => {
     let chunks = [];
-    range(firstChunk.x - 1n, lastChunk.x + 1n).forEach((x) => {
-      range(firstChunk.y - 1n, lastChunk.y + 1n).forEach((y) => {
+    range(firstChunk.x, lastChunk.x).forEach((x) => {
+      range(firstChunk.y, lastChunk.y).forEach((y) => {
         chunks.push({ x, y });
       });
     });

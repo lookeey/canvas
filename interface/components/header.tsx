@@ -1,7 +1,6 @@
-import Link from "next/link";
 import React from "react";
 import { Logo } from "canvas-uikit";
-import { Box, List, ListItem } from "@chakra-ui/react";
+import { Box, Link, List, ListItem } from "@chakra-ui/react";
 
 const links = [
   {
@@ -52,7 +51,7 @@ const Header: React.FC<{}> = ({}) => (
       >
         {links.map(({ label, href }, idx) => (
           <ListItem key={idx}>
-            <Link href={href}>{label}</Link>
+            <Link href={href} isExternal>{label}</Link>
           </ListItem>
         ))}
       </List>

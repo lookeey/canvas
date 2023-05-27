@@ -30,10 +30,13 @@ function useCanvasControls(ref: React.MutableRefObject<HTMLCanvasElement>) {
     const posQuery = router.asPath  ;
     if (posQuery) {
       console.log(posQuery)
-      let [, x, y, zoom] = /@(.*),(.*)\?z=(.*)/.exec(posQuery);
-      console.log("AAA", x, y, zoom);
-      setCenterPos({ x: Number(x), y: Number(y) });
-      setZoom(Number(zoom));
+      let x, y, zoom;
+      let match = /@(.*),(.*)\?z=(.*)/.exec(posQuery);
+      if (match) {
+        ([, x, y, zoom] = match);
+        setCenterPos({ x: Number(x), y: Number(y) });
+        _setZoom(Number(zoom));
+      }
     }
   }, []);
 
