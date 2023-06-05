@@ -1,10 +1,10 @@
 import { XYPos } from "../utils/types";
-import { useEffect, useRef, useState } from "react";
+import { SetStateAction, useEffect, useRef, useState } from "react";
 import { CappedMap } from "../utils/sortedMap";
 import { range } from "../utils/chunk";
 import { base64ToImageData, emptyImage, uint8ArrayToImageData } from "../utils/drawChunk";
 
-const CACHE_INV_TIME = 10000
+const CACHE_INV_TIME = 10000;
 
 async function queryChunk(pos: XYPos): Promise<Uint8Array | null> {
   const res = await fetch(
@@ -23,10 +23,10 @@ async function queryChunk(pos: XYPos): Promise<Uint8Array | null> {
 function useChunkData(firstChunk: XYPos, lastChunk: XYPos) {
   const [chunksInView, setChunksInView] = useState<XYPos[]>([]);
   const [chunksToFetch, setChunksToFetch] = useState<XYPos[]>([]);
-  const chunkDataCache = useRef<CappedMap<string, Uint8Array>>(null);
+  const chunkDataCache = useRef<CappedMap<string, Uint8Array> | null>(null) as React.MutableRefObject<CappedMap<string, Uint8Array>>;
   const chunkIsLoading = useRef<{ [key: string]: boolean }>({});
-  const imageDataCache = useRef<CappedMap<string, ImageBitmap>>(null);
-  const lastCacheTime = useRef<CappedMap<string, number>>(null);
+  const imageDataCache = useRef<CappedMap<string, ImageBitmap> | null>(null) as React.MutableRefObject<CappedMap<string, ImageBitmap>>;
+  const lastCacheTime = useRef<CappedMap<string, number> | null>(null) as React.MutableRefObject<CappedMap<string, number>>;
 
   useEffect(() => {
     chunkDataCache.current = new CappedMap<string, Uint8Array>(4096);
@@ -40,7 +40,7 @@ function useChunkData(firstChunk: XYPos, lastChunk: XYPos) {
   const [cacheIter, setCacheIter] = useState(0);
 
   useEffect(() => {
-    let chunks = [];
+    let chunks: XYPos[] = [];
     range(firstChunk.x, lastChunk.x).forEach((x) => {
       range(firstChunk.y, lastChunk.y).forEach((y) => {
         chunks.push({ x, y });
@@ -69,14 +69,16 @@ function useChunkData(firstChunk: XYPos, lastChunk: XYPos) {
     chunksToFetch.forEach((chunk) => {
       let chunkKey = `${chunk.x}.${chunk.y}`;
       if (
-        !chunkDataCache.current.get(chunkKey) &&
+        !chunkDataCache.current?.get(chunkKey) &&
         !chunkIsLoading.current?.[chunkKey] &&
         Date.now() - (lastCacheTime.current?.get(chunkKey) ?? 0) > CACHE_INV_TIME
       ) {
         chunkIsLoading.current[chunkKey] = true;
         queryChunk(chunk).then((data) => {
           lastCacheTime.current.push(chunkKey, Date.now());
-          chunkDataCache.current.push(chunkKey, data);
+          if (data) {
+            chunkDataCache.current.push(chunkKey, data);
+          }
           setCacheIter((iter) => iter + 1);
           delete chunkIsLoading.current[chunkKey];
         });
@@ -92,7 +94,6 @@ function useChunkData(firstChunk: XYPos, lastChunk: XYPos) {
         let chunkKey = `${x}.${y}`;
         let data = dataCache.get(chunkKey);
         if (data && !imageDataCache.current.get(chunkKey)) {
-            console.log(data)
           uint8ArrayToImageData(data).then((img) => {
             imageDataCache.current.push(chunkKey, img);
           });

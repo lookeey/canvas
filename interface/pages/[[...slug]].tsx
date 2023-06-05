@@ -19,7 +19,6 @@ const Game: React.FC<IGameProps> = (props: IGameProps) => {
     <Wrapper>
       <EnterPageAnimation />
       <CanvasView />
-      <ColorPicker selectedColor={3}/>
     </Wrapper>
   );
 };

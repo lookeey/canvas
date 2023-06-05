@@ -67,12 +67,12 @@ const variantSolid = defineStyle((props) => {
     return {
       bg,
       _hover: {
-        bg: mode(`gray.200`, `whiteAlpha.300`)(props),
+        bg: 'gray3',
         _disabled: {
           bg
         }
       },
-      _active: { bg: mode(`gray.300`, `whiteAlpha.400`)(props) }
+      _active: { bg: 'gray3' }
     }
   }
 

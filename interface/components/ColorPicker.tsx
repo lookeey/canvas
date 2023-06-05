@@ -9,7 +9,6 @@ const Wrapper = styled.div`
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   border: 2px solid black;
-  pointer-events:  none;
 `;
 
 const Color = styled.button<{ color: string; selected: boolean }>`
@@ -19,8 +18,9 @@ const Color = styled.button<{ color: string; selected: boolean }>`
   border: ${({ selected }) => (selected ? "2px solid gray" : "none")};
 `;
 
-const ColorPicker: React.FC<{ selectedColor: number }> = ({
+const ColorPicker: React.FC<{ selectedColor: bigint, onSelect: (color: bigint) => void }> = ({
   selectedColor,
+  onSelect
 }) => {
   const colors = palettes.default;
   return (
@@ -30,7 +30,8 @@ const ColorPicker: React.FC<{ selectedColor: number }> = ({
           <Color
             key={i}
             color={`rgb(${color[0]}, ${color[1]}, ${color[2]})`}
-            selected={selectedColor === i}
+            selected={Number(selectedColor) === i}
+            onClick={() => onSelect(BigInt(i))}
           />
         </>
       ))}

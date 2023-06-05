@@ -1,20 +1,22 @@
 import palettes from "config/palettes";
 import pako from "pako";
 import {atob} from "next/dist/compiled/@edge-runtime/primitives/encoding";
-import { CHUNK_SIZE } from "../config/chunk";
+import { CHUNK_SIZE as CHUNK_SIZE_bigint } from "../config/chunk";
 
-let emptyImage;
+let CHUNK_SIZE = Number(CHUNK_SIZE_bigint);
 
-let arr = new Uint8ClampedArray(CHUNK_SIZE * CHUNK_SIZE * 4);
+let emptyImage: ImageBitmap;
+
+let arr = new Uint8ClampedArray((CHUNK_SIZE) * (CHUNK_SIZE) * 4);
   arr.set([12, 230, 1, 255, 12, 230, 1, 255, 12, 230, 1, 255, 12, 230, 1, 255, 12, 230, 1, 255,12, 230, 1, 255, 12, 230, 1, 255, 12, 230, 1, 255, 12, 230, 1, 255, 12, 230, 1, 255, 12, 230, 1, 255, ], 0);
 
 if (typeof window !== "undefined") {
   createImageBitmap(
-    new ImageData(arr, CHUNK_SIZE, CHUNK_SIZE)
+    new ImageData(arr, (CHUNK_SIZE), (CHUNK_SIZE))
   ).then((img) => (emptyImage = img));
 }
 
-function byteToColor(byte: number) {
+export function byteToColor(byte: number) {
   let color = palettes.default[byte] || [0, 0, 0]
   return [...color, 255];
 }

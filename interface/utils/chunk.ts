@@ -13,7 +13,7 @@ function sqrt(value: bigint) {
     return value;
   }
 
-  function newtonIteration(n, x0) {
+  function newtonIteration(n: bigint, x0: bigint): bigint {
     const x1 = (n / x0 + x0) >> 1n;
     if (x0 === x1 || x0 === x1 - 1n) {
       return x0;
