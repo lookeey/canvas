@@ -59,12 +59,12 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
     };
     return [
       {
-        x: bi((Number(-centerPos.x)- pixelViewSize.width / 2) / Number(CHUNK_SIZE)),
-        y: bi((Number(-centerPos.y) - pixelViewSize.height / 2) / Number(CHUNK_SIZE)),
+        x: bi((Number(centerPos.x)- pixelViewSize.width / 2) / Number(CHUNK_SIZE) ),
+        y: bi((Number(centerPos.y) - pixelViewSize.height / 2) / Number(CHUNK_SIZE)),
       },
       {
-        x: bi((Number(-centerPos.x) + pixelViewSize.width / 2) / Number(CHUNK_SIZE) + 2),
-        y: bi((Number(-centerPos.y) + pixelViewSize.height / 2) / Number(CHUNK_SIZE) + 2),
+        x: bi((Number(centerPos.x) + pixelViewSize.width / 2) / Number(CHUNK_SIZE)),
+        y: bi((Number(centerPos.y) + pixelViewSize.height / 2) / Number(CHUNK_SIZE)),
       },
     ];
   }, [centerPos.x, centerPos.y, zoom]);
@@ -102,12 +102,12 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
 
       function drawChunks() {
         let offsetX =
-          (ctx.canvas.width / (2 * zoom) + Number(centerPos.x % CHUNK_SIZE)) % Number(CHUNK_SIZE);
+          (ctx.canvas.width / (2 * zoom) - Number(centerPos.x % CHUNK_SIZE)) % Number(CHUNK_SIZE);
         let offsetY =
-          (ctx.canvas.height / (2 * zoom) + Number(centerPos.y % CHUNK_SIZE)) % Number(CHUNK_SIZE);
+          (ctx.canvas.height / (2 * zoom) - Number(centerPos.y % CHUNK_SIZE)) % Number(CHUNK_SIZE);
 
-        let offsetXPositive = offsetX >= 0 ? 1 : 0;
-        let offsetYPositive = offsetY >= 0 ? 1 : 0;
+        let offsetXPositive = offsetX > 0 ? 1 : 0;
+        let offsetYPositive = offsetY > 0 ? 1 : 0;
 
         chunksInView.forEach((chunk) => {
           ctx.scale(zoom, zoom);
@@ -119,6 +119,9 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
               offsetY + centerPosOffset.y,
           );
           ctx.resetTransform();
+          if (chunk.x === 0n && chunk.y === 0n) {
+
+          }
         });
       }
 
@@ -136,7 +139,7 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
         grad.addColorStop(1, `rgb(${colors[1].join(",")})`);
         ctx.strokeStyle = grad;
 
-        ctx.lineWidth = zoom >= 24 ? 5 / zoom : 2 / zoom;
+        ctx.lineWidth = zoom >= 12 ? 5 / zoom : 2 / zoom;
         ctx.scale(zoom, zoom);
         ctx.strokeRect(posX, posY, 1, 1);
         ctx.resetTransform();
@@ -157,49 +160,37 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
           )
         })
 
-        for (let selectedPixel of pixelsInView) {
-          let selectedPos = {
+        const positions = pixelsInView.map(pixel => {
+          return {
             x:
               Math.floor(
-                ((Number(selectedPixel.x + centerPos.x) + centerPosOffset.x) * zoom +
+                ((Number(pixel.x - centerPos.x) + centerPosOffset.x) * zoom +
                   ctx.canvas.width / 2) /
-                  zoom
+                zoom
               ) + pixelOffset.x,
             y:
               Math.floor(
-                ((Number(selectedPixel.y + centerPos.y) + centerPosOffset.y) * zoom +
+                ((Number(pixel.y - centerPos.y) + centerPosOffset.y) * zoom +
                   ctx.canvas.height / 2) /
-                  zoom
+                zoom
               ) + pixelOffset.y,
-          };
+          }
+        })
+
+        positions.forEach((pos, idx) => {
           ctx.lineWidth = 6 / zoom;
-          ctx.strokeRect(selectedPos.x, selectedPos.y, 1, 1);
-        }
+          ctx.strokeRect(pos.x, pos.y, 1, 1);
+        })
 
-        for (let selectedPixel of selectedPixels) {
-          let selectedPos = {
-            x:
-              Math.floor(
-                ((Number(selectedPixel.x + centerPos.x) + centerPosOffset.x) * zoom +
-                  ctx.canvas.width / 2) /
-                  zoom
-              ) + pixelOffset.x,
-            y:
-              Math.floor(
-                ((Number(selectedPixel.y + centerPos.y) + centerPosOffset.y) * zoom +
-                  ctx.canvas.height / 2) /
-                  zoom
-              ) + pixelOffset.y,
-          };
-
-          ctx.fillStyle = `rgba(${byteToColor(Number(selectedPixel.color)).join(",")})`;
-          ctx.strokeStyle = `rgba(${byteToColor(Number(selectedPixel.color)).join(
+        positions.forEach((pos, idx) => {
+          ctx.fillStyle = `rgba(${byteToColor(Number(pixelsInView[idx].color)).join(",")})`;
+          ctx.strokeStyle = `rgba(${byteToColor(Number(pixelsInView[idx].color)).join(
             ","
           )})`;
           ctx.lineWidth = 0.5 / zoom;
-          ctx.fillRect(selectedPos.x, selectedPos.y, 1, 1);
-          ctx.strokeRect(selectedPos.x, selectedPos.y, 1, 1);
-        }
+          ctx.fillRect(pos.x, pos.y, 1, 1);
+          ctx.strokeRect(pos.x, pos.y, 1, 1);
+        })
 
         ctx.resetTransform();
       }

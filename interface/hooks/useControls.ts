@@ -78,10 +78,10 @@ function useCanvasControls(ref: React.RefObject<HTMLCanvasElement>) {
   let hoveredPixel = canvas
     ? {
         x:
-          bi(Math.floor((lastMousePos.x - canvas.width / 2) / zoom - centerPosOffset.x)) -
+          bi(Math.floor((lastMousePos.x - canvas.width / 2) / zoom - centerPosOffset.x)) +
           centerPos.x,
         y:
-          bi(Math.floor((lastMousePos.y - canvas.height / 2) / zoom - centerPosOffset.y)) -
+          bi(Math.floor((lastMousePos.y - canvas.height / 2) / zoom - centerPosOffset.y)) +
           centerPos.y,
       }
     : { x: 0n, y: 0n };
@@ -120,12 +120,12 @@ function useCanvasControls(ref: React.RefObject<HTMLCanvasElement>) {
 
     let result = {
       x:
-        initialPosition.x +
-        initialSpeed.x * timeElapsed +
+        initialPosition.x -
+        initialSpeed.x * timeElapsed -
         (accelerations.x * timeElapsed ** 2) / 2,
       y:
-        initialPosition.y +
-        initialSpeed.y * timeElapsed +
+        initialPosition.y -
+        initialSpeed.y * timeElapsed -
         (accelerations.y * timeElapsed ** 2) / 2,
     };
 
@@ -139,8 +139,8 @@ function useCanvasControls(ref: React.RefObject<HTMLCanvasElement>) {
     });
 
     setCenterPosOffset({
-      x: result.x % 1 + (result.x < 0 ? 1 : 0),
-      y: result.y % 1 + (result.y < 0 ? 1 : 0),
+      x: - result.x % 1 - (result.x < 0 ? 1 : 0),
+      y: - result.y % 1 - (result.y < 0 ? 1 : 0),
     });
 
     if (timeElapsed <= Math.abs(velocity / ACCELERATION)) {
@@ -246,8 +246,8 @@ function useCanvasControls(ref: React.RefObject<HTMLCanvasElement>) {
         y: centerPosOffset.y + mouseDelta.y / zoom,
       };
       setCenterPos({
-        x: centerPos.x + bi(Math.floor(delta.x)),
-        y: centerPos.y + bi(Math.floor(delta.y)),
+        x: centerPos.x - bi(Math.floor(delta.x)),
+        y: centerPos.y - bi(Math.floor(delta.y)),
       });
       setCenterPosOffset({
         x: (delta.x % 1) + (delta.x < 0 ? 1 : 0),
@@ -296,8 +296,6 @@ function useCanvasControls(ref: React.RefObject<HTMLCanvasElement>) {
       };
     }
   }, [canvas, handleMouseUp, handleMove, handleWheel]);
-
-  console.log({ hoveredPixel: hoveredPixel.x, c: centerPos.x })
 
 
   return {
