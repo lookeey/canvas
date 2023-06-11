@@ -61,11 +61,11 @@ const AnimatedBlocks: React.FC<
   useEffect(() => {
     if (!ref.current) return;
     const svg = ref.current;
-    const children = Array.from(svg.children);
+    const children = Array.from(svg.children) as SVGElement[];
     let timeouts: number[] = [];
     let intervals: number[] = [];
 
-    children.forEach((rect: SVGElement, idx) => {
+    children.forEach((rect, idx) => {
       rect.style.transformBox = "fill-box";
       rect.style.transformOrigin = "center";
 

@@ -1,8 +1,14 @@
 import { XYPos } from "../utils/types";
-import { SetStateAction, useEffect, useRef, useState } from "react";
+import React, { SetStateAction, useEffect, useRef, useState } from "react";
 import { CappedMap } from "../utils/sortedMap";
 import { range } from "../utils/chunk";
-import { base64ToImageData, emptyImage, uint8ArrayToImageData } from "../utils/drawChunk";
+import { applyPixels, emptyImage, uint8ArrayToImageData } from "../utils/drawChunk";
+import { watchContractEvent } from "viem/contract";
+import tracingApiClient from "../utils/tracingApiClient";
+import { useChainId } from "wagmi";
+import { ChainId } from "../pages/_app";
+import { getContract } from "../config/contracts";
+import { CHUNK_SIZE } from "../config/chunk";
 
 const CACHE_INV_TIME = 10000;
 
@@ -25,19 +31,21 @@ function useChunkData(firstChunk: XYPos, lastChunk: XYPos) {
   const [chunksToFetch, setChunksToFetch] = useState<XYPos[]>([]);
   const chunkDataCache = useRef<CappedMap<string, Uint8Array> | null>(null) as React.MutableRefObject<CappedMap<string, Uint8Array>>;
   const chunkIsLoading = useRef<{ [key: string]: boolean }>({});
+  const eventPixelCache = useRef<CappedMap<string, {[key: string]: number}> | null>(null) as React.MutableRefObject<CappedMap<string, {[key: string]: number}>>;
   const imageDataCache = useRef<CappedMap<string, ImageBitmap> | null>(null) as React.MutableRefObject<CappedMap<string, ImageBitmap>>;
   const lastCacheTime = useRef<CappedMap<string, number> | null>(null) as React.MutableRefObject<CappedMap<string, number>>;
+  const hasUpdated = useRef<{[key: string]: boolean}>({ });
 
   useEffect(() => {
-    chunkDataCache.current = new CappedMap<string, Uint8Array>(4096);
-    imageDataCache.current = new CappedMap<string, ImageBitmap>(4096);
-    lastCacheTime.current = new CappedMap<string, number>(4096);
+    chunkDataCache.current = new CappedMap(4096);
+    imageDataCache.current = new CappedMap(4096);
+    lastCacheTime.current = new CappedMap(4096);
+    eventPixelCache.current = new CappedMap(8192);
   }, []);
 
-  const [chunkImageData, setChunkImageData] = useState<{
-    [key: string]: ImageBitmap;
-  }>({});
+  const chainId = useChainId() as ChainId;
   const [cacheIter, setCacheIter] = useState(0);
+
 
   useEffect(() => {
     let chunks: XYPos[] = [];
@@ -93,24 +101,44 @@ function useChunkData(firstChunk: XYPos, lastChunk: XYPos) {
       range(firstChunk.y, lastChunk.y).forEach((y) => {
         let chunkKey = `${x}.${y}`;
         let data = dataCache.get(chunkKey);
-        if (data && !imageDataCache.current.get(chunkKey)) {
+        if (data && (!imageDataCache.current.get(chunkKey) || hasUpdated.current[chunkKey])) {
+          if (eventPixelCache.current.get(chunkKey)) {
+            data = applyPixels(data, eventPixelCache.current.get(chunkKey) ?? {});
+          }
           uint8ArrayToImageData(data).then((img) => {
             imageDataCache.current.push(chunkKey, img);
           });
+          hasUpdated.current[chunkKey] = false;
         }
       });
     });
-    /*setChunkImageData(
-            chunksInView.map((chunk) => {
-                let chunkKey = `${chunk.x}.${chunk.y}`;
-                let data = chunkDataCache.current.get(chunkKey);
-                if (data) {
-                    return base64ToImageData(data);
-                }
-                return emptyImage;
-            })
-        );*/
+    let currentPixels = eventPixelCache.current.get("0.0") ?? {};
   }, [cacheIter, firstChunk.x, firstChunk.y, lastChunk.x, lastChunk.y]);
+
+  useEffect(() => {
+    tracingApiClient(chainId).watchContractEvent({
+      ...getContract("canvas", chainId),
+      eventName: "PixelPlaced",
+      onLogs: (logs) => {
+        logs.forEach((log) => {
+          let x = log.args.x ?? 0n;
+          let y = log.args.y ?? 0n;
+          let chunkX = x / CHUNK_SIZE;
+          let chunkY = y / CHUNK_SIZE;
+          let chunkKey = `${chunkX}.${chunkY}`;
+
+          let currentPixels = eventPixelCache.current.get(chunkKey) ?? {};
+
+          eventPixelCache.current.push(chunkKey, {
+            ...currentPixels,
+            [`${x % CHUNK_SIZE}.${y % CHUNK_SIZE}`]: Number(log.args?.colorId) ?? 0
+          })
+          hasUpdated.current[chunkKey] = true;
+        });
+        setCacheIter((iter) => iter + 1)
+      }
+    })
+  }, [chainId])
 
   return imageDataCache.current;
 }

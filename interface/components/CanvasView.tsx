@@ -4,7 +4,7 @@ import useCanvasControls from "hooks/useControls";
 import dynamic from "next/dynamic";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import styled from "@emotion/styled";
-import { byteToColor, emptyImage } from "utils/drawChunk";
+import { byteToColor, emptyImage, gridImg } from "utils/drawChunk";
 import { bi, range } from "utils/chunk";
 import { XYPos } from "utils/types";
 import useChunksData from "../hooks/useChunksData";
@@ -13,6 +13,8 @@ import getGradientForFrame from "../utils/gradientAnim";
 import { Box, Button, chakra, Flex } from "@chakra-ui/react";
 import ColorPicker from "./ColorPicker";
 import usePlacePixels from "../hooks/usePixelActions";
+import { useAccount } from "wagmi";
+import ConnectModal from "./ConnectModal";
 
 const Canvas
   = styled.canvas`
@@ -24,6 +26,8 @@ export interface CanvasViewProps {}
 
 const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
   const ref = useRef<HTMLCanvasElement>(null);
+  const { address, isConnected } = useAccount();
+  const [modalOpen, setModalOpen] = useState(false);
 
   const {
     zoom,
@@ -33,6 +37,7 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
     setSelectedColor,
     selectedPixels,
     selectedColor,
+    hoveredPixel,
     clearPixels
   } = useCanvasControls(ref);
 
@@ -195,7 +200,17 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
         ctx.resetTransform();
       }
 
+      const drawGrid = function() {
+        if (zoom < 8) return;
+        ctx.scale(zoom, zoom)
+        let x = Math.floor((ctx.canvas.width / 2) / zoom ) - Math.floor(ctx.canvas.width / 2) + pixelOffset.x;
+        let y = Math.floor((ctx.canvas.height / 2) / zoom) - Math.floor(ctx.canvas.height / 2) + pixelOffset.y;
+        ctx.drawImage(gridImg, x, y)
+        ctx.resetTransform();
+      }
+
       drawChunks();
+      drawGrid();
       drawSelectedPixels();
       drawHoveredPixel();
 
@@ -218,6 +233,8 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
     mousePos.x,
     mousePos.y,
     selectedPixels.length,
+    centerPosOffset.x,
+    centerPosOffset.y,
   ]);
 
   return (
@@ -229,6 +246,7 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
         }
         `}
       </style>
+      <ConnectModal isOpen={modalOpen} onClose={() => setModalOpen(false)}/>
       <Canvas width={windowSize.w} height={windowSize.h} ref={ref}>
         canvas
       </Canvas>
@@ -242,9 +260,9 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
         borderRadius="md"
       >
         <chakra.b display={"inline-block"} w={"24px"}>x</chakra.b>
-        {centerPos.x.toLocaleString()}, <br/>
+        {hoveredPixel.x.toLocaleString()}, <br/>
         <chakra.b display={"inline-block"} w={"24px"}>y</chakra.b>
-        {centerPos.y.toLocaleString()}
+        {hoveredPixel.y.toLocaleString()}
       </Box>
       <Flex
         position={"absolute"}
@@ -252,7 +270,13 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
         right={3}
         gap={2}
         direction={"column"}
+        minWidth={"40"}
       >
+        <Button
+          onClick={() => setModalOpen(true)}
+        >
+          {isConnected ? `${address?.slice(0, 4)}...${address?.slice(-3)}` : "Connect"}
+        </Button>
         {selectedPixels.length > 0 && (
           <>
             <Box
@@ -260,7 +284,6 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
               color={"gray.700"}
               py={"1"}
               px={"2"}
-              minWidth={"40"}
               borderRadius="md"
               textAlign={"end"}
               flexGrow={"0"}
@@ -268,7 +291,7 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
               <chakra.b>{selectedPixels.length}</chakra.b> pixels selected
             </Box>
             <Button size={"sm"} onClick={() => clearPixels()}>Clear Pixels</Button>
-            <Button size={"sm"} onClick={() => clearPixels()}>Paint Pixels</Button>
+            <Button size={"sm"} onClick={() => transaction.write?.()}>Paint Pixels</Button>
           </>
         )}
       </Flex>
