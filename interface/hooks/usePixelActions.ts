@@ -1,7 +1,19 @@
-import { useChainId, useContractWrite, usePrepareContractWrite } from "wagmi";
+import { erc20ABI, useChainId, useContractRead, useContractWrite, usePrepareContractWrite } from "wagmi";
 import contracts, { getContract } from "../config/contracts";
-import Canvas_ABI from "../config/abi/Canvas_ABI";
 import { ChainId } from "../pages/_app";
+import { Address } from "viem";
+
+export const useAllowance = ({address, token, spender}: {address: Address, token: Address, spender: Address}) => {
+  return useContractRead({
+    address: token,
+    abi: erc20ABI,
+    functionName: "allowance",
+    args: [
+      address,
+      spender
+    ]
+  })
+}
 
 export const useApproveCanvas = (amount: bigint) => {
   const chainId = useChainId() as ChainId
@@ -33,10 +45,10 @@ const usePlacePixels = (pixels: {x: bigint, y: bigint, color: bigint}[]) => {
     enabled: pixels.length === 1
   })
 
-  const sendSinglePixel = useContractWrite(configSingle)
-  const sendMultiplePixels = useContractWrite(configMultiple)
+  const setSinglePixel = useContractWrite(configSingle)
+  const setMultiplePixels = useContractWrite(configMultiple)
 
-  return pixels.length > 1 ? sendMultiplePixels : sendSinglePixel
+  return pixels.length > 1 ? setMultiplePixels : setSinglePixel
 }
 
 export default usePlacePixels

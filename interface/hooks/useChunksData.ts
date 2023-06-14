@@ -1,9 +1,8 @@
 import { XYPos } from "../utils/types";
-import React, { SetStateAction, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CappedMap } from "../utils/sortedMap";
-import { range } from "../utils/chunk";
-import { applyPixels, emptyImage, uint8ArrayToImageData } from "../utils/drawChunk";
-import { watchContractEvent } from "viem/contract";
+import { floorDiv, floorMod, range } from "../utils/bigint";
+import { applyPixels, uint8ArrayToImageData } from "../utils/drawChunk";
 import tracingApiClient from "../utils/tracingApiClient";
 import { useChainId } from "wagmi";
 import { ChainId } from "../pages/_app";
@@ -112,7 +111,6 @@ function useChunkData(firstChunk: XYPos, lastChunk: XYPos) {
         }
       });
     });
-    let currentPixels = eventPixelCache.current.get("0.0") ?? {};
   }, [cacheIter, firstChunk.x, firstChunk.y, lastChunk.x, lastChunk.y]);
 
   useEffect(() => {
@@ -123,15 +121,15 @@ function useChunkData(firstChunk: XYPos, lastChunk: XYPos) {
         logs.forEach((log) => {
           let x = log.args.x ?? 0n;
           let y = log.args.y ?? 0n;
-          let chunkX = x / CHUNK_SIZE;
-          let chunkY = y / CHUNK_SIZE;
+          let chunkX = floorDiv(x , CHUNK_SIZE);
+          let chunkY = floorDiv(y, CHUNK_SIZE);
           let chunkKey = `${chunkX}.${chunkY}`;
 
           let currentPixels = eventPixelCache.current.get(chunkKey) ?? {};
 
           eventPixelCache.current.push(chunkKey, {
             ...currentPixels,
-            [`${x % CHUNK_SIZE}.${y % CHUNK_SIZE}`]: Number(log.args?.colorId) ?? 0
+            [`${floorMod(x, CHUNK_SIZE)}.${floorMod(y, CHUNK_SIZE)}`]: Number(log.args?.colorId) ?? 0
           })
           hasUpdated.current[chunkKey] = true;
         });

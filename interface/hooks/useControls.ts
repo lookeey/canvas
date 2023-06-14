@@ -2,12 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { XYPos } from "utils/types";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
-import { bi } from "../utils/chunk";
+import { bi } from "../utils/bigint";
 import { useAccount } from "wagmi";
+import { useMotionValue, useSpring } from "framer-motion";
 
 const ACCELERATION = -0.0003;
 const MAX_SPEED = 1;
-const ZOOM_DURATION = 1000;
 
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 32;
@@ -26,7 +26,7 @@ function easeOutExpo(
 
 function useCanvasControls(ref: React.RefObject<HTMLCanvasElement>) {
   const router = useRouter();
-  const { isConnected } = useAccount()
+  const { isConnected } = useAccount();
 
   let canvas = ref?.current as HTMLCanvasElement;
 
@@ -35,8 +35,20 @@ function useCanvasControls(ref: React.RefObject<HTMLCanvasElement>) {
   const [centerPos, setCenterPos] = useState({ x: 0n, y: 0n });
   const [centerPosOffset, setCenterPosOffset] = useState({ x: 0, y: 0 });
 
-  const [zoom, setZoom] = useState(0.5); // 0 = min zoom, 1 = max zoom
-  const effectiveZoom = MIN_ZOOM + (MAX_ZOOM - MIN_ZOOM) * zoom **2;
+  const _zoom = useMotionValue(0.2)
+  const animatedZoom = useSpring(_zoom, {
+    damping: 5,
+    mass: 0.005,
+    stiffness: 100,
+  })
+  const [effectiveZoom, setEff] = useState(1)
+  animatedZoom.on("change", (v) => setEff(MIN_ZOOM + (MAX_ZOOM - MIN_ZOOM) * v **2))
+  const setZoom = (zoom: number) => {
+    _zoom.set(Math.max(0, Math.min(1, zoom)))
+  }
+
+
+
   const [selectedColor, setSelectedColor] = useState(0n);
 
   useEffect(() => {
@@ -80,13 +92,22 @@ function useCanvasControls(ref: React.RefObject<HTMLCanvasElement>) {
   let hoveredPixel = canvas
     ? {
         x:
-          bi(Math.floor((lastMousePos.x - canvas.width / 2) / effectiveZoom - centerPosOffset.x)) +
-          centerPos.x,
+          bi(
+            Math.floor(
+              (lastMousePos.x - canvas.width / 2) / effectiveZoom -
+                centerPosOffset.x
+            )
+          ) + centerPos.x,
         y:
-          bi(Math.floor((lastMousePos.y - canvas.height / 2) / effectiveZoom - centerPosOffset.y)) +
-          centerPos.y,
+          bi(
+            Math.floor(
+              (lastMousePos.y - canvas.height / 2) / effectiveZoom -
+                centerPosOffset.y
+            )
+          ) + centerPos.y,
       }
     : { x: 0n, y: 0n };
+
 
   function momentum(
     initialSpeed: { x: number; y: number },
@@ -96,7 +117,7 @@ function useCanvasControls(ref: React.RefObject<HTMLCanvasElement>) {
     timestamp?: number
   ) {
     let initialPosition = {
-      x: Number(_initialPosition.x % 1000000n)- _initialPositionOffset.x,
+      x: Number(_initialPosition.x % 1000000n) - _initialPositionOffset.x,
       y: Number(_initialPosition.y % 1000000n) - _initialPositionOffset.y,
     };
     if (startTime === undefined) {
@@ -132,20 +153,18 @@ function useCanvasControls(ref: React.RefObject<HTMLCanvasElement>) {
     };
 
     setCenterPosOffset({
-      x: (result.x > 0 ? 1 : 0)-result.x % 1,
-      y: (result.y > 0 ? 1 : 0)-result.y % 1,
+      x: (result.x > 0 ? 1 : 0) - (result.x % 1),
+      y: (result.y > 0 ? 1 : 0) - (result.y % 1),
     });
 
     setCenterPos({
       x:
         bi(Math.ceil(result.x)) +
-        (_initialPosition.x - (_initialPosition.x % 1000000n)) ,
+        (_initialPosition.x - (_initialPosition.x % 1000000n)),
       y:
         bi(Math.ceil(result.y)) +
         (_initialPosition.y - (_initialPosition.y % 1000000n)),
     });
-
-
 
     if (timeElapsed <= Math.abs(velocity / ACCELERATION)) {
       lastMomentumRAF.current = window.requestAnimationFrame((time) => {
@@ -157,37 +176,6 @@ function useCanvasControls(ref: React.RefObject<HTMLCanvasElement>) {
           time
         );
       });
-    }
-  }
-
-  const lastZoomRAF = useRef<number | null>(null);
-
-  function animateZoom(
-    dest: number,
-    initialZoom: number,
-    startTime?: number,
-    timestamp?: number
-  ) {
-    if (startTime === undefined) {
-      startTime = performance.now();
-      timestamp = performance.now();
-      lastZoomRAF.current = window.requestAnimationFrame((time) => {
-        animateZoom(dest, initialZoom, startTime, time);
-      });
-      return;
-    }
-
-    let timeElapsed = (timestamp as number) - startTime;
-    setZoom(
-      easeOutExpo(timeElapsed, initialZoom, dest - initialZoom, ZOOM_DURATION)
-    );
-
-    if (timeElapsed < ZOOM_DURATION) {
-      lastZoomRAF.current = window.requestAnimationFrame((time) => {
-        animateZoom(dest, initialZoom, startTime, time);
-      });
-    } else {
-      updateUrl(centerPos.x, centerPos.y, Math.max(0, dest));
     }
   }
 
@@ -209,7 +197,7 @@ function useCanvasControls(ref: React.RefObject<HTMLCanvasElement>) {
     if (Date.now() - lastMouseEventTime <= 50) {
       momentum(mouseSpeed, centerPos, centerPosOffset);
     }
-    updateUrl(centerPos.x, centerPos.y, zoom);
+    updateUrl(centerPos.x, centerPos.y, _zoom.get());
 
     // detect a click
     if (
@@ -253,14 +241,14 @@ function useCanvasControls(ref: React.RefObject<HTMLCanvasElement>) {
       let deltaPlusOffset = {
         x: delta.x + centerPosOffset.x,
         y: delta.y + centerPosOffset.y,
-      }
+      };
       setCenterPos({
         x: centerPos.x - bi(Math.floor(deltaPlusOffset.x)),
         y: centerPos.y - bi(Math.floor(deltaPlusOffset.y)),
       });
       setCenterPosOffset({
-        x: (deltaPlusOffset.x) % 1 + (deltaPlusOffset.x < 0 ? 1 : 0),
-        y: (deltaPlusOffset.y) % 1 + (deltaPlusOffset.y < 0 ? 1 : 0),
+        x: (deltaPlusOffset.x % 1) + (deltaPlusOffset.x < 0 ? 1 : 0),
+        y: (deltaPlusOffset.y % 1) + (deltaPlusOffset.y < 0 ? 1 : 0),
       });
       setMouseSpeed({
         x: -mouseDelta.x / (Date.now() - lastMouseEventTime) / effectiveZoom,
@@ -276,26 +264,56 @@ function useCanvasControls(ref: React.RefObject<HTMLCanvasElement>) {
 
   const handleWheel = (e: WheelEvent) => {
     e.preventDefault();
-    if (lastZoomRAF.current !== null) {
-      window.cancelAnimationFrame(lastZoomRAF.current);
-    }
-    destinationZoom.current = Math.max(
-      0,
-      Math.min(
-        1,
-        (destinationZoom.current ?? zoom) -
-          (e.deltaY * 0.001)
-      )
-    );
-    animateZoom(destinationZoom.current, zoom);
+
+    setZoom((destinationZoom.current ?? _zoom.get()) -
+      (e.deltaY * 0.001))
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Escape") {
-      setSelectedPixels([]);
+    if (!([
+      "r",
+    ].includes(e.key))) {
+      e.preventDefault()
     }
+    const moveAmount = e.ctrlKey ? 1n : 30n;
 
-  }
+    switch (e.key) {
+      case "Escape":
+        setSelectedPixels([]);
+        break;
+      case "+":
+      case ".":
+        setZoom(_zoom.get() + 0.05);
+        break;
+      case "-":
+      case ",":
+        setZoom(_zoom.get() - 0.05);
+        break;
+      case "ArrowUp":
+        setCenterPos({
+          x: centerPos.x,
+          y: centerPos.y - moveAmount,
+        });
+        break;
+      case "ArrowDown":
+        setCenterPos({
+          x: centerPos.x,
+          y: centerPos.y + moveAmount,
+        });
+        break;
+      case "ArrowLeft":
+        setCenterPos({
+          x: centerPos.x - moveAmount,
+          y: centerPos.y,
+        });
+        break;
+      case "ArrowRight":
+        setCenterPos({
+          x: centerPos.x + moveAmount,
+          y: centerPos.y,
+        });
+    }
+  };
 
   useEffect(() => {
     if (canvas) {
@@ -303,16 +321,17 @@ function useCanvasControls(ref: React.RefObject<HTMLCanvasElement>) {
       canvas.addEventListener("mouseup", handleMouseUp);
       canvas.addEventListener("mousemove", handleMove);
       canvas.addEventListener("wheel", handleWheel);
+      window.addEventListener("keydown", handleKeyDown);
 
       return () => {
         canvas.removeEventListener("mousedown", handleMouseDown);
         canvas.removeEventListener("mouseup", handleMouseUp);
         canvas.removeEventListener("mousemove", handleMove);
         canvas.removeEventListener("wheel", handleWheel);
+        window.removeEventListener("keydown", handleKeyDown);
       };
     }
   }, [canvas, handleMouseUp, handleMove, handleWheel]);
-
 
   return {
     zoom: effectiveZoom,

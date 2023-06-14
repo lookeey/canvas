@@ -139,7 +139,8 @@ const sizes = {
     h: '14',
     minW: '14',
     fontSize: 'xl',
-    px: '6'
+    px: '6',
+    fontFamily: 'heading'
   }),
   lg: defineStyle({
     h: '12',

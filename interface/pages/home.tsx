@@ -51,7 +51,6 @@ const IndexPage = () => {
         </Heading>
         <Button
           style={{ cursor: "pointer", maxWidth: "800px" }}
-          isDisabled
           size="xl"
           mt="2"
           onClick={() => {
@@ -61,18 +60,13 @@ const IndexPage = () => {
             }, 2500);
           }}
         >
-          fSoon
+          Play
         </Button>
       </Flex>
     </Layout>
   );
 };
 
-/**
- * Head export to define metadata for the page
- *
- * See: https://www.gatsbyjs.com/docs/reference/built-in-components/gatsby-head/
- */
 export const Head = () => <Seo title="Home" />;
 
 export default IndexPage;
