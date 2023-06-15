@@ -315,6 +315,114 @@ function useCanvasControls(ref: React.RefObject<HTMLCanvasElement>) {
     }
   };
 
+  const [lastTouchDistance, setLastTouchDistance] = useState(0);
+  const [lastTouchCenter, setLastTouchCenter] = useState({ x: 0, y: 0 });
+
+  const handleTouchStart = (e: TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setLastMouseDownPos({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+    setLastMousePos({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+    if (lastMomentumRAF.current !== null) {
+      window.cancelAnimationFrame(lastMomentumRAF.current);
+    }
+    if (e.touches.length >= 2) {
+      setLastTouchDistance(
+        Math.sqrt(
+          Math.pow(e.touches[0].clientX - e.touches[1].clientX, 2) +
+            Math.pow(e.touches[0].clientY - e.touches[1].clientY, 2)
+        )
+      );
+      setLastTouchCenter({
+        x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+        y: (e.touches[0].clientY + e.touches[1].clientY) / 2,
+      });
+    }
+    setDragging(true);
+  }
+
+  const handleTouchEnd = (e: TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragging(false);
+    if (Date.now() - lastMouseEventTime <= 50) {
+      momentum(mouseSpeed, centerPos, centerPosOffset);
+    }
+    updateUrl(centerPos.x, centerPos.y, _zoom.get());
+  }
+
+  const handleTouchMove = (e: TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (dragging) {
+      if (e.touches.length === 1) {
+        const mouseDelta = {
+          x: e.touches[0].clientX - lastMousePos.x,
+          y: e.touches[0].clientY - lastMousePos.y,
+        };
+        let delta = {
+          x: mouseDelta.x / effectiveZoom,
+          y: mouseDelta.y / effectiveZoom,
+        };
+        let deltaPlusOffset = {
+          x: delta.x + centerPosOffset.x,
+          y: delta.y + centerPosOffset.y,
+        };
+        setCenterPos({
+          x: centerPos.x - bi(Math.floor(deltaPlusOffset.x)),
+          y: centerPos.y - bi(Math.floor(deltaPlusOffset.y)),
+        });
+        setCenterPosOffset({
+          x: (deltaPlusOffset.x % 1) + (deltaPlusOffset.x < 0 ? 1 : 0),
+          y: (deltaPlusOffset.y % 1) + (deltaPlusOffset.y < 0 ? 1 : 0),
+        });
+        setMouseSpeed({
+          x: -mouseDelta.x / (Date.now() - lastMouseEventTime) / effectiveZoom,
+          y: -mouseDelta.y / (Date.now() - lastMouseEventTime) / effectiveZoom,
+        });
+        setLastMousePos({
+          x: e.touches[0].clientX,
+          y: e.touches[0].clientY,
+        })
+      }
+      if (e.touches.length >= 2) {
+        const touchDistance = Math.sqrt(
+          Math.pow(e.touches[0].clientX - e.touches[1].clientX, 2) +
+            Math.pow(e.touches[0].clientY - e.touches[1].clientY, 2)
+        );
+        const zoomDelta = (touchDistance - lastTouchDistance) / 2000;
+        setZoom(_zoom.get() + zoomDelta);
+        setLastTouchDistance(touchDistance);
+        const touchCenter = {
+          x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+          y: (e.touches[0].clientY + e.touches[1].clientY) / 2,
+        }
+        const mouseDelta = {
+          x: touchCenter.x - lastTouchCenter.x,
+          y: touchCenter.y - lastTouchCenter.y,
+        }
+        let delta = {
+          x: mouseDelta.x / effectiveZoom,
+          y: mouseDelta.y / effectiveZoom,
+        }
+        let deltaPlusOffset = {
+          x: delta.x + centerPosOffset.x,
+          y: delta.y + centerPosOffset.y,
+        }
+        setCenterPos({
+          x: centerPos.x - bi(Math.floor(deltaPlusOffset.x)),
+          y: centerPos.y - bi(Math.floor(deltaPlusOffset.y)),
+        });
+        setCenterPosOffset({
+          x: (deltaPlusOffset.x % 1) + (deltaPlusOffset.x < 0 ? 1 : 0),
+          y: (deltaPlusOffset.y % 1) + (deltaPlusOffset.y < 0 ? 1 : 0),
+        });
+        setLastTouchCenter(touchCenter);
+      }
+      setLastMouseEventTime(Date.now());
+    }
+  }
+
   useEffect(() => {
     if (canvas) {
       canvas.addEventListener("mousedown", handleMouseDown);
@@ -322,6 +430,9 @@ function useCanvasControls(ref: React.RefObject<HTMLCanvasElement>) {
       canvas.addEventListener("mousemove", handleMove);
       canvas.addEventListener("wheel", handleWheel);
       window.addEventListener("keydown", handleKeyDown);
+      canvas.addEventListener("touchstart", handleTouchStart);
+      canvas.addEventListener("touchend", handleTouchEnd);
+      canvas.addEventListener("touchmove", handleTouchMove);
 
       return () => {
         canvas.removeEventListener("mousedown", handleMouseDown);
@@ -329,6 +440,9 @@ function useCanvasControls(ref: React.RefObject<HTMLCanvasElement>) {
         canvas.removeEventListener("mousemove", handleMove);
         canvas.removeEventListener("wheel", handleWheel);
         window.removeEventListener("keydown", handleKeyDown);
+        canvas.removeEventListener("touchstart", handleTouchStart);
+        canvas.removeEventListener("touchend", handleTouchEnd);
+        canvas.removeEventListener("touchmove", handleTouchMove);
       };
     }
   }, [canvas, handleMouseUp, handleMove, handleWheel]);
