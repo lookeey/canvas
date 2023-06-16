@@ -6,6 +6,8 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { fantom, fantomTestnet } from "viem/chains";
 import { publicProvider } from '@wagmi/core/providers/public'
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
+import React from "react";
+import NextNProgress from 'nextjs-progressbar';
 
 const {
   chains,
@@ -26,6 +28,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     <ChakraProvider theme={theme("dark")}>
       <ApolloProvider client={graphClient}>
         <WagmiConfig config={config}>
+          <NextNProgress color="#29D" startPosition={0.3} stopDelayMs={200} height={2} showOnShallow={true} options={{showSpinner: false}}/>
           <Component {...pageProps} />
         </WagmiConfig>
       </ApolloProvider>

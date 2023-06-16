@@ -270,9 +270,7 @@ function useCanvasControls(ref: React.RefObject<HTMLCanvasElement>) {
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
-    if (!([
-      "r",
-    ].includes(e.key))) {
+    if (e.ctrlKey) {
       e.preventDefault()
     }
     const moveAmount = e.ctrlKey ? 1n : 30n;

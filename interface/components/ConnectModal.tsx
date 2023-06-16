@@ -21,7 +21,7 @@ const ConnectModal: React.FC<ConnectModalProps> = ({ isOpen, onClose }) => {
   const [isConnecting, setIsConnecting] = useState(false);
 
   const { connect, connectors, error, isLoading, pendingConnector } =
-    useConnect()
+    useConnect({onSuccess: onClose})
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>

@@ -1,22 +1,8 @@
 import React from "react";
 import { Logo } from "canvas-uikit";
-import { Box, Link, List, ListItem } from "@chakra-ui/react";
-
-const links = [
-  {
-    label: "Docs",
-    href: "https://canvas-2.gitbook.io/docs",
-  },
-  {
-    label: "Discord",
-    href: "https://discord.gg/Z5mZ6EYerr",
-  },
-
-  {
-    label: "Twitter",
-    href: "https://twitter.com/0xc4nvas",
-  },
-];
+import { Box, List, ListItem } from "@chakra-ui/react";
+import ConnectButton from "./ConnectButton";
+import { Link } from "@chakra-ui/next-js";
 
 const Header: React.FC<{}> = ({}) => (
   <Box
@@ -38,7 +24,16 @@ const Header: React.FC<{}> = ({}) => (
       alignItems="center"
       padding="0 24px"
     >
-      <Logo height="48px" />
+        <Link href={"/home"}>
+          <Box display={["none", "block"]}>
+            <Logo height="48px" show={"full"}/>
+          </Box>
+          <Box display={["block", "none"]}>
+            <Logo height="48px" show={"logo"} />
+          </Box>
+        </Link>
+
+
       <List
         display="flex"
         justifyContent="center"
@@ -49,11 +44,7 @@ const Header: React.FC<{}> = ({}) => (
         listStyleType="none"
         gap={2}
       >
-        {links.map(({ label, href }, idx) => (
-          <ListItem key={idx}>
-            <Link href={href} isExternal>{label}</Link>
-          </ListItem>
-        ))}
+        <ConnectButton />
       </List>
     </Box>
   </Box>

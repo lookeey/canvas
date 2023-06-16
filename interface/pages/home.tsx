@@ -33,7 +33,7 @@ const IndexPage = () => {
       >
         <HeroBackground />
         <Logo w={["80%", null, "40%"]} margin={"1rem"} />
-        <Heading textAlign={"center"} fontFamily={"body"} my={3} px={2} size={"lg"} fontWeight="regular">
+        <Heading textAlign={"center"} fontFamily={"body"} my={3} px={2} size={"md"} fontWeight="regular">
           <TypeAnimation
             sequence={typeof splash === "string" ? [splash] : splash}
             cursor={true}

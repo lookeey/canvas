@@ -2,40 +2,7 @@ import React, { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
 import Lottie, { LottieRef } from "lottie-react";
 import anim from "./lottie/enter-game.json";
-
-const Wrapper = styled.div`
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  z-index: 3;
-
-  & > div {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-
-    svg {
-      width: auto !important;
-      height: auto !important;
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%) !important;
-      
-      .sq path {
-        fill: ${({ theme }) => theme.bg} !important;
-        stroke: ${({ theme }) => theme.bg};
-        stroke-width: 1px;
-      }
-
-      & > g > g:first-child {
-        filter: drop-shadow(0 0 12px rgba(0, 0, 0, 0.5));
-      }
-    }
-  }
-`;
+import { Box } from "@chakra-ui/react";
 
 export interface ILeavePageAnimationProps {
   show: boolean;
@@ -61,7 +28,37 @@ const LeavePageAnimation: React.FC<ILeavePageAnimationProps> = ({
   return (
     <>
       {show && (
-        <Wrapper>
+        <Box
+          position="fixed"
+          width="100%"
+          height="100%"
+          top="0"
+          left="0"
+          zIndex="100"
+          sx={{
+            "& > div": {
+              position: "absolute",
+              height: "100%",
+              width: "100%",
+              svg: {
+                width: "auto !important",
+                height: "auto !important",
+                position: "absolute",
+                left: "50%",
+                top: "50%",
+                transform: "translate(-50%, -50%) !important",
+                ".sq path": {
+                  fill: "bg",
+                  stroke: "bg",
+                  strokeWidth: "1px",
+                },
+                "& > g > g:first-child": {
+                  filter: "drop-shadow(0 0 12px rgba(0, 0, 0, 0.5))"
+                }
+              }
+            }
+          }}
+        >
           <Lottie
             animationData={anim}
             loop={false}
@@ -69,7 +66,7 @@ const LeavePageAnimation: React.FC<ILeavePageAnimationProps> = ({
             rendererSettings={{ imagePreserveAspectRatio: "xMinYMin slice" }}
             lottieRef={lottieRef}
           />
-        </Wrapper>
+        </Box>
       )}
     </>
   );

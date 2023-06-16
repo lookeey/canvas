@@ -4,7 +4,7 @@ import useCanvasControls from "hooks/useControls";
 import dynamic from "next/dynamic";
 import React, { useRef, useState } from "react";
 import styled from "@emotion/styled";
-import { Box, Button, chakra, Flex, Image, Link, Stack } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, chakra, Flex, IconButton, Image, Stack, VStack } from "@chakra-ui/react";
 import ColorPicker from "./ColorPicker";
 import usePlacePixels, {
   useAllowance,
@@ -17,6 +17,10 @@ import useRenderCanvas from "../hooks/useRenderCanvas";
 import contracts, { getContract } from "../config/contracts";
 import { ChainId } from "../pages/_app";
 import { formatEther } from "viem";
+import ConnectButton from "./ConnectButton";
+import { Link } from "@chakra-ui/next-js";
+import { Logo } from "canvas-uikit";
+import { SettingsIcon } from "@chakra-ui/icons";
 
 const Canvas = styled.canvas`
   image-rendering: pixelated;
@@ -27,8 +31,7 @@ export interface CanvasViewProps {}
 
 const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
   const ref = useRef<HTMLCanvasElement>(null);
-  const { address, isConnected } = useAccount();
-  const [modalOpen, setModalOpen] = useState(false);
+  const { address } = useAccount();
   const chainId = useChainId() as ChainId;
 
   const windowSize = useWindowSize();
@@ -59,6 +62,12 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
 
   const necessaryInk = BigInt(selectedPixels.length) * 10n ** 18n;
 
+  const HomeButton = () => (
+    <Link href={"/home"}>
+      <Logo show={"logo"}/>
+    </Link>
+  )
+
   return (
     <>
       <style>
@@ -68,56 +77,74 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
         }
         `}
       </style>
-      <ConnectModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
+
       <Canvas width={windowSize.w} height={windowSize.h} ref={ref}>
         canvas
       </Canvas>
       <Box
         position="absolute"
-        bottom={["unset", null, "2rem"]}
-        top={[3, null, "unset"]}
-        left={[3, null, 8]}
-        padding={2}
-        minWidth={32}
-        borderRadius="md"
-        bg={"gray.100"}
-        boxShadow="2xl"
-        color={"gray.700"}
+        top={3}
+        left={3}
       >
-        <chakra.b display={"inline-block"} w={"24px"}>
-          x
-        </chakra.b>
-        {hoveredPixel.x.toLocaleString()}, <br />
-        <chakra.b display={"inline-block"} w={"24px"}>
-          y
-        </chakra.b>
-        {hoveredPixel.y.toLocaleString()}
+        <VStack
+          padding={2}
+          bg={"gray.100"}
+          boxShadow="xl"
+          color={"gray.700"}
+          borderRadius="md"
+          display={[null, "none", "flex"]}
+        >
+          <IconButton as={Link} href={"/home"} aria-label={"Home"} icon={<Logo height="6" show={"logo"} />}/>
+          <IconButton icon={<SettingsIcon/>} aria-label={"Settings"}/>
+        </VStack>
       </Box>
+      <Flex
+        direction={"column"}
+        gap={"2"}
+        position="absolute"
+            bottom={["unset", null, 8]}
+            top={[3, null, "unset"]}
+            left={[3, null, 8]}>
+        <Box
+          padding={2}
+          minWidth={32}
+          borderRadius="md"
+          bg={"gray.100"}
+          boxShadow="xl"
+          color={"gray.700"}
+        >
+          <chakra.b display={"inline-block"} w={"4"}>
+            x
+          </chakra.b>
+          {hoveredPixel.x.toLocaleString()}, <br />
+          <chakra.b display={"inline-block"} w={"4"}>
+            y
+          </chakra.b>
+          {hoveredPixel.y.toLocaleString()}
+        </Box>
+        <VStack
+          padding={2}
+          bg={"gray.100"}
+          boxShadow="xl"
+          color={"gray.700"}
+          borderRadius="md"
+          display={["flex", null, "none"]}
+          alignSelf={"flex-start"}
+        >
+          <IconButton as={Link} href={"/home"} aria-label={"Home"} icon={<Logo height="6" show={"logo"} />}/>
+          <IconButton icon={<SettingsIcon/>} aria-label={"Settings"}/>
+        </VStack>
+      </Flex>
+
       <Stack
         position={"absolute"}
         top={3}
         right={3}
         gap={2}
         direction={"column"}
-        sx={{ "*": { alignSelf: "flex-end" } }}
+        sx={{ "> *": { alignSelf: "flex-end" } }}
       >
-        <Flex borderRadius="md" align={"center"} bg={"gray3"}>
-          {isConnected && (
-            <Flex as={Link} href={"/ink"} padding={2} align="center">
-              <Image src={"./ink_logo.png"} h={6} borderRadius={"full"} />
-              <chakra.b ml={2}>
-                {formatEther(balance?.value ?? 0n)} ink
-              </chakra.b>
-            </Flex>
-          )}
-
-          <Button boxShadow={"lg"} onClick={() => setModalOpen(true)}>
-            {isConnected
-              ? `${address?.slice(0, 4)}...${address?.slice(-3)}`
-              : "Connect"}
-          </Button>
-        </Flex>
-
+        <ConnectButton/>
         {selectedPixels.length > 0 && (
           <>
             <Box

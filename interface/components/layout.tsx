@@ -1,14 +1,9 @@
-/**
- * Layout component that queries for data
- * with Gatsby's useStaticQuery component
- *
- * See: https://www.gatsbyjs.com/docs/how-to/querying-data/use-static-query/
- */
-
 import React, { PropsWithChildren } from "react";
 
 import Header from "./header";
-import { Box, Flex, Spacer } from "@chakra-ui/react";
+import {  Flex,  Link, Spacer } from "@chakra-ui/react";
+import { BsDiscord, BsTwitter } from "react-icons/bs";
+import { SiGitbook } from "react-icons/si";
 
 const Layout: React.FC<PropsWithChildren<any>> = ({ children }) => {
   return (
@@ -22,11 +17,26 @@ const Layout: React.FC<PropsWithChildren<any>> = ({ children }) => {
       <Header /* siteTitle={data.site.siteMetadata?.title || `Title`} */ />
         {children}
       <Spacer/>
-        <Box as={"footer"} textAlign={"center"} padding="2">
-          © {new Date().getFullYear()} &middot; Built with Next.JS &middot; This
+        <Flex as={"footer"} textAlign={"center"} padding="2" direction={"column"} alignItems={"center"}>
+          <Flex my={"2"} gap={"5"} sx={{
+            svg: {
+              fontSize: "2.5rem"}
+          }}>
+            <Link href={"https://discord.gg/Z5mZ6EYerr"} isExternal>
+              <BsDiscord/>
+            </Link>
+            <Link href={"https://twitter.com/0xc4nvas"} isExternal>
+              <BsTwitter/>
+            </Link>
+            <Link href={"https://canvas-2.gitbook.io/docs"} isExternal>
+              <SiGitbook/>
+            </Link>
+
+          </Flex>
+          © {new Date().getFullYear()} &middot; This
           site uses one (1) cookie.
 
-        </Box>
+        </Flex>
 
     </Flex>
   );
