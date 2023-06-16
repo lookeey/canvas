@@ -4,7 +4,7 @@ import {
   Modal,
   ModalBody,
   ModalCloseButton,
-  ModalContent,
+  ModalContent, ModalFooter,
   ModalHeader,
   ModalOverlay,
   Stack
@@ -24,7 +24,7 @@ const ConnectModal: React.FC<ConnectModalProps> = ({ isOpen, onClose }) => {
     useConnect()
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Connect Wallet</ModalHeader>
@@ -48,6 +48,7 @@ const ConnectModal: React.FC<ConnectModalProps> = ({ isOpen, onClose }) => {
             }
           </Stack>
         </ModalBody>
+        <ModalFooter/>
       </ModalContent>
     </Modal>
   );

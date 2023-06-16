@@ -1,41 +1,46 @@
-import styled from "@emotion/styled";
 import palettes from "../config/palettes";
+import { Button, Grid, GridItem } from "@chakra-ui/react";
 
-const Wrapper = styled.div`
-  position: fixed;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  border: 2px solid black;
-`;
-
-const Color = styled.button<{ color: string; selected: boolean }>`
-  width: 30px;
-  height: 30px;
-  background-color: ${({ color }) => color};
-  border: ${({ selected }) => (selected ? "2px solid gray" : "none")};
-`;
-
-const ColorPicker: React.FC<{ selectedColor: bigint, onSelect: (color: bigint) => void }> = ({
-  selectedColor,
-  onSelect
-}) => {
+const ColorPicker: React.FC<{
+  selectedColor: bigint;
+  onSelect: (color: bigint) => void;
+}> = ({ selectedColor, onSelect }) => {
   const colors = palettes.default;
   return (
-    <Wrapper>
+    <Grid
+      templateColumns="repeat(8, 1fr)"
+      position="fixed"
+      bottom="2rem"
+      left="50%"
+      transform="translateX(-50%)"
+      padding="2px"
+      bg={"whiteAlpha.800"}
+      borderRadius="md"
+      boxShadow="2xl"
+    >
       {colors.map((color, i) => (
-        <>
-          <Color
+        <GridItem
+          key={i}
+          onClick={() => onSelect(BigInt(i))}
+          w={8}
+          h={8}
+          padding="4px"
+        >
+          <Button
+            variant={"unstyled"}
+            display={"block"}
+            padding="0"
+            minW={"100%"}
+            w={"100%"}
+            h={"100%"}
             key={i}
-            color={`rgb(${color[0]}, ${color[1]}, ${color[2]})`}
-            selected={Number(selectedColor) === i}
-            onClick={() => onSelect(BigInt(i))}
+            bg={`rgb(${color[0]}, ${color[1]}, ${color[2]})`}
+            outline={selectedColor === BigInt(i) ? "4px solid" : "2px solid"}
+            outlineColor={selectedColor === BigInt(i) ? "gray.500" : "gray.300"}
           />
-        </>
+        </GridItem>
       ))}
-    </Wrapper>
+    </Grid>
   );
 };
 

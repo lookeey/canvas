@@ -12,15 +12,6 @@ import { TypeAnimation } from "react-type-animation";
 
 // const utmParameters = `?utm_source=starter&utm_medium=start-page&utm_campaign=default-starter`
 
-const Hero = styled.div`
-  display: flex;
-  position: relative;
-  justify-content: center;
-  min-height: 70vh;
-  flex-direction: column;
-  align-items: center;
-`;
-
 const IndexPage = () => {
   const [show, setShow] = useState(false);
   const router = useRouter();

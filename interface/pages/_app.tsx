@@ -1,4 +1,4 @@
-import { ResetCSS, theme } from "canvas-uikit";
+import { theme } from "canvas-uikit";
 import type { AppProps } from "next/app";
 import { ApolloProvider } from "@apollo/client";
 import graphClient from "utils/apolloClient";
@@ -27,7 +27,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       <ApolloProvider client={graphClient}>
         <WagmiConfig config={config}>
           <Component {...pageProps} />
-          <ResetCSS />
         </WagmiConfig>
       </ApolloProvider>
     </ChakraProvider>

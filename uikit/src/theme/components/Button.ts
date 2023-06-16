@@ -62,17 +62,23 @@ const variantSolid = defineStyle((props) => {
   const { colorScheme: c } = props
 
   if (c === 'gray') {
-    const bg = 'gray2'
+    /*
+    bg={"gray.200"}
+            _hover={{ bg: "gray.300" }}
+            color={"gray.700"}
+     */
+    const bg = 'gray.200'
 
     return {
       bg,
       _hover: {
-        bg: 'gray3',
+        bg: 'gray.300',
         _disabled: {
           bg
         }
       },
-      _active: { bg: 'gray3' }
+      color: 'gray.800',
+      _active: { bg: 'gray.300' }
     }
   }
 

@@ -4,7 +4,7 @@ import useCanvasControls from "hooks/useControls";
 import dynamic from "next/dynamic";
 import React, { useRef, useState } from "react";
 import styled from "@emotion/styled";
-import { Box, Button, chakra, Flex, Stack } from "@chakra-ui/react";
+import { Box, Button, chakra, Flex, Image, Link, Stack } from "@chakra-ui/react";
 import ColorPicker from "./ColorPicker";
 import usePlacePixels, {
   useAllowance,
@@ -16,6 +16,7 @@ import useWindowSize from "../hooks/useWindowSize";
 import useRenderCanvas from "../hooks/useRenderCanvas";
 import contracts, { getContract } from "../config/contracts";
 import { ChainId } from "../pages/_app";
+import { formatEther } from "viem";
 
 const Canvas = styled.canvas`
   image-rendering: pixelated;
@@ -72,13 +73,16 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
         canvas
       </Canvas>
       <Box
-        bg={"blackAlpha.800"}
         position="absolute"
-        bottom={8}
-        left={8}
+        bottom={["unset", null, "2rem"]}
+        top={[3, null, "unset"]}
+        left={[3, null, 8]}
         padding={2}
         minWidth={32}
         borderRadius="md"
+        bg={"gray.100"}
+        boxShadow="2xl"
+        color={"gray.700"}
       >
         <chakra.b display={"inline-block"} w={"24px"}>
           x
@@ -97,37 +101,49 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
         direction={"column"}
         sx={{ "*": { alignSelf: "flex-end" } }}
       >
-        <Button onClick={() => setModalOpen(true)}>
-          {isConnected
-            ? `${address?.slice(0, 4)}...${address?.slice(-3)}`
-            : "Connect"}
-        </Button>
+        <Flex borderRadius="md" align={"center"} bg={"gray3"}>
+          {isConnected && (
+            <Flex as={Link} href={"/ink"} padding={2} align="center">
+              <Image src={"./ink_logo.png"} h={6} borderRadius={"full"} />
+              <chakra.b ml={2}>
+                {formatEther(balance?.value ?? 0n)} ink
+              </chakra.b>
+            </Flex>
+          )}
+
+          <Button boxShadow={"lg"} onClick={() => setModalOpen(true)}>
+            {isConnected
+              ? `${address?.slice(0, 4)}...${address?.slice(-3)}`
+              : "Connect"}
+          </Button>
+        </Flex>
+
         {selectedPixels.length > 0 && (
           <>
             <Box
-              bg={"white"}
-              color={"gray.700"}
+              bg={"gray.200"}
+              color={"gray.800"}
               py={"1"}
               px={"2"}
-              borderRadius="md"
+              borderRadius="sm"
               textAlign={"end"}
               flexGrow={"0"}
+              boxShadow={"lg"}
             >
-              <chakra.b>{selectedPixels.length}</chakra.b> pixels selected
+              <chakra.b>{selectedPixels.length}</chakra.b> pixel
+              {selectedPixels.length > 1 ? "s" : ""} selected
             </Box>
-            <Button size={"sm"} onClick={() => clearPixels()}>
-              Clear Pixels
-            </Button>
+            <Button onClick={() => clearPixels()}>Clear Pixels</Button>
             {(balance?.value ?? 0n) < necessaryInk ? (
-              <Button size={"sm"} onClick={() => approveTransaction.write?.()}>
+              <Button onClick={() => approveTransaction.write?.()}>
                 Get Ink
               </Button>
             ) : (allowance.data ?? 0n) > BigInt(selectedPixels.length) ? (
-              <Button size={"sm"} onClick={() => approveTransaction.write?.()}>
+              <Button onClick={() => approveTransaction.write?.()}>
                 Approve Ink
               </Button>
             ) : (
-              <Button size={"sm"} onClick={() => transaction.write?.()}>
+              <Button onClick={() => transaction.write?.()}>
                 Paint Pixels
               </Button>
             )}

@@ -21,7 +21,6 @@
     "**/*.ts",
     "**/*.tsx",
     "./typings.d.ts",
-    "./snappy.d.ts"
   ],
   "exclude": ["node_modules"]
 }

@@ -2,10 +2,14 @@ import { extendTheme } from '@chakra-ui/react'
 import dark from './colors/dark'
 import light from './colors/light'
 import components from './components'
+import shared from './colors/shared'
 
 export const theme = (mode: 'dark' | 'light') =>
   extendTheme({
-    colors: mode === 'dark' ? dark : light,
+    colors: {
+      ...(mode === 'dark' ? dark : light),
+      ...shared
+    },
     components,
     fonts: {
       heading: 'Goldman',
@@ -13,6 +17,9 @@ export const theme = (mode: 'dark' | 'light') =>
     },
     styles: {
       global: {
+        html: {
+          fontSize: '20px'
+        },
         body: {
           bg: mode === 'dark' ? 'bg' : 'light.500'
         }
