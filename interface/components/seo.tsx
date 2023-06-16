@@ -17,7 +17,22 @@ const Seo: React.FC<React.PropsWithChildren<SeoProps>> = ({
   title,
   children,
 }) => {
-  return <>{children}</>;
+  return (
+    <>
+      <title>{title}</title>
+      <meta property="og:title" content="Opera Canvas" />
+      <meta property="og:site_name" content="0xcanvas" />
+      <meta property="og:url" content="0xcanvas.com" />
+      <meta
+        property="og:description"
+        content="A virtually infinite canvas on the blockchain."
+      />
+      <meta property="og:type" content="website" />
+      <meta property="og:image" content="/banner.png" />
+
+      {children}
+    </>
+  );
 };
 
 export default Seo;
