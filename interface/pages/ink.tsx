@@ -31,6 +31,7 @@ const Hero = styled.div`
 const IndexPage = () => {
   return (
     <Layout>
+      <Seo title="Get Ink" />
       <Flex
         position="relative"
         justifyContent="center"
@@ -128,7 +129,5 @@ const IndexPage = () => {
     </Layout>
   );
 };
-
-export const Head = () => <Seo title="Get Ink" />;
 
 export default IndexPage;

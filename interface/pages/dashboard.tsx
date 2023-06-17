@@ -14,23 +14,11 @@ import {
   ListItem,
   Text, VStack
 } from "@chakra-ui/react";
-import { Link } from "@chakra-ui/next-js";
-import { ArrowForwardIcon, ExternalLinkIcon } from "@chakra-ui/icons";
-
-// const utmParameters = `?utm_source=starter&utm_medium=start-page&utm_campaign=default-starter`
-
-const Hero = styled.div`
-  display: flex;
-  position: relative;
-  justify-content: center;
-  min-height: 70vh;
-  flex-direction: column;
-  align-items: center;
-`;
 
 const IndexPage = () => {
   return (
     <Layout>
+      <Seo title="Get Ink" />
       <Box
         opacity={0.3}
         position={"absolute"}
@@ -107,7 +95,5 @@ const IndexPage = () => {
     </Layout>
   );
 };
-
-export const Head = () => <Seo title="Get Ink" />;
 
 export default IndexPage;

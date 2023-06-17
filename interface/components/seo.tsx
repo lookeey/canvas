@@ -6,6 +6,7 @@
  */
 
 import * as React from "react";
+import Head from "next/head";
 
 interface SeoProps {
   description?: string;
@@ -18,8 +19,8 @@ const Seo: React.FC<React.PropsWithChildren<SeoProps>> = ({
   children,
 }) => {
   return (
-    <>
-      <title>{title}</title>
+    <Head>
+      <title>{title} | Canvas</title>
       <meta name="title" content="Opera Canvas" />
       <meta name="description" content="A virtually infinite canvas forever living in the blockchain." />
 
@@ -39,9 +40,8 @@ const Seo: React.FC<React.PropsWithChildren<SeoProps>> = ({
       <meta property="twitter:description" content="A virtually infinite canvas forever living in the blockchain." />
       <meta property="twitter:image" content="/banner.png" />
 
-
       {children}
-    </>
+    </Head>
   );
 };
 

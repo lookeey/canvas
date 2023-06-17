@@ -24,6 +24,7 @@ const IndexPage = () => {
   );
   return (
     <Layout>
+      <Seo title="Home" />
       <DynamicAnimation show={show} />
       <Flex
         position="relative"
@@ -60,7 +61,5 @@ const IndexPage = () => {
     </Layout>
   );
 };
-
-export const Head = () => <Seo title="Home" />;
 
 export default IndexPage;
