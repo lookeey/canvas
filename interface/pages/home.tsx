@@ -1,16 +1,19 @@
 import React, { useMemo, useState } from "react";
-import styled from "@emotion/styled";
 import Layout from "../components/layout";
 import Seo from "../components/seo";
 import { Logo } from "canvas-uikit";
-import { Box, Button, Flex, Heading } from "@chakra-ui/react";
+import { Button, Flex, Heading } from "@chakra-ui/react";
 import HeroBackground from "components/HeroBackground";
-import LeavePageAnimation from "components/LeavePageAnimation";
 import { useRouter } from "next/router";
 import splashes from "../config/splashes";
 import { TypeAnimation } from "react-type-animation";
+import dynamic from "next/dynamic";
 
 // const utmParameters = `?utm_source=starter&utm_medium=start-page&utm_campaign=default-starter`
+
+const DynamicAnimation = dynamic(() => import("components/LeavePageAnimation"), {
+  loading: () => <div />,
+})
 
 const IndexPage = () => {
   const [show, setShow] = useState(false);
@@ -21,7 +24,7 @@ const IndexPage = () => {
   );
   return (
     <Layout>
-      <LeavePageAnimation show={show} />
+      <DynamicAnimation show={show} />
       <Flex
         position="relative"
         justifyContent="center"

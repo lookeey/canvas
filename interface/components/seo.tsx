@@ -20,6 +20,9 @@ const Seo: React.FC<React.PropsWithChildren<SeoProps>> = ({
   return (
     <>
       <title>{title}</title>
+      <meta name="title" content="Opera Canvas" />
+      <meta name="description" content="A virtually infinite canvas forever living in the blockchain." />
+
       <meta property="og:title" content="Opera Canvas" />
       <meta property="og:site_name" content="0xcanvas" />
       <meta property="og:url" content="0xcanvas.com" />
@@ -29,6 +32,13 @@ const Seo: React.FC<React.PropsWithChildren<SeoProps>> = ({
       />
       <meta property="og:type" content="website" />
       <meta property="og:image" content="/banner.png" />
+
+      <meta property="twitter:card" content="summary_large_image" />
+      <meta property="twitter:url" content="https://0xc4nvas.com" />
+      <meta property="twitter:title" content="Opera Canvas" />
+      <meta property="twitter:description" content="A virtually infinite canvas forever living in the blockchain." />
+      <meta property="twitter:image" content="/banner.png" />
+
 
       {children}
     </>

@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from "react";
-import styled from "@emotion/styled";
 import Lottie, { LottieRef } from "lottie-react";
 import anim from "./lottie/enter-game.json";
 import { Box } from "@chakra-ui/react";

@@ -1,37 +1,38 @@
 import { theme } from "canvas-uikit";
 import type { AppProps } from "next/app";
-import { ApolloProvider } from "@apollo/client";
-import graphClient from "utils/apolloClient";
 import { ChakraProvider } from "@chakra-ui/react";
 import { fantom, fantomTestnet } from "viem/chains";
-import { publicProvider } from '@wagmi/core/providers/public'
+import { publicProvider } from "@wagmi/core/providers/public";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import React from "react";
-import NextNProgress from 'nextjs-progressbar';
+import NextNProgress from "nextjs-progressbar";
 
-const {
-  chains,
-  publicClient
-} = configureChains(process.env.NODE_ENV === "production" ? [fantom] : [fantomTestnet, fantom],
+const { chains, publicClient } = configureChains(
+  process.env.NODE_ENV === "production" ? [fantom] : [fantomTestnet, fantom],
   [publicProvider()]
-  )
+);
 
-export type ChainId = typeof chains[number]["id"];
+export type ChainId = (typeof chains)[number]["id"];
 
 const config = createConfig({
   autoConnect: true,
-  publicClient
+  publicClient,
 });
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider theme={theme("dark")}>
-      <ApolloProvider client={graphClient}>
-        <WagmiConfig config={config}>
-          <NextNProgress color="#29D" startPosition={0.3} stopDelayMs={200} height={2} showOnShallow={true} options={{showSpinner: false}}/>
-          <Component {...pageProps} />
-        </WagmiConfig>
-      </ApolloProvider>
+      <WagmiConfig config={config}>
+        <NextNProgress
+          color="#29D"
+          startPosition={0.3}
+          stopDelayMs={200}
+          height={2}
+          showOnShallow={false}
+          options={{ showSpinner: false }}
+        />
+        <Component {...pageProps} />
+      </WagmiConfig>
     </ChakraProvider>
   );
 }

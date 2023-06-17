@@ -11,6 +11,8 @@ import {
 } from "@chakra-ui/react";
 import { useAccount, useDisconnect } from "wagmi";
 import React from "react";
+import { Link } from "@chakra-ui/next-js";
+import { ArrowForwardIcon } from "@chakra-ui/icons";
 
 const AccountModal = ({ isOpen, onClose }: {
   isOpen: boolean,
@@ -28,6 +30,8 @@ const AccountModal = ({ isOpen, onClose }: {
         <ModalCloseButton />
         <ModalBody>
           <b>Address: {address}</b>
+          <br/>
+          <Link href={"/dashboard"}>Go to Dashboard <ArrowForwardIcon/></Link>
         </ModalBody>
         <ModalFooter>
           <Button onClick={() => disconnect()}>Disconnect</Button>
