@@ -11,12 +11,10 @@ import usePlacePixels, {
   useApproveCanvas,
 } from "../hooks/usePixelActions";
 import { useAccount, useBalance, useChainId } from "wagmi";
-import ConnectModal from "./ConnectModal";
 import useWindowSize from "../hooks/useWindowSize";
 import useRenderCanvas from "../hooks/useRenderCanvas";
-import contracts, { getContract } from "../config/contracts";
-import { ChainId } from "../pages/_app";
-import { formatEther } from "viem";
+import { getContract } from "../config/contracts";
+import { ChainId } from "components/WagmiProvider";
 import ConnectButton from "./ConnectButton";
 import { Link } from "@chakra-ui/next-js";
 import { Logo } from "canvas-uikit";

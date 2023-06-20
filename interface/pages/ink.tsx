@@ -1,5 +1,4 @@
-import React, { useMemo, useState } from "react";
-import styled from "@emotion/styled";
+import React from "react";
 import Layout from "../components/layout";
 import Seo from "../components/seo";
 import {
@@ -18,15 +17,6 @@ import { Link } from "@chakra-ui/next-js";
 import { ArrowForwardIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 
 // const utmParameters = `?utm_source=starter&utm_medium=start-page&utm_campaign=default-starter`
-
-const Hero = styled.div`
-  display: flex;
-  position: relative;
-  justify-content: center;
-  min-height: 70vh;
-  flex-direction: column;
-  align-items: center;
-`;
 
 const IndexPage = () => {
   return (

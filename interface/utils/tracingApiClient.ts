@@ -1,5 +1,5 @@
 import { createPublicClient, http } from "viem";
-import { ChainId } from "../pages/_app";
+import { ChainId } from "components/WagmiProvider";
 import { fantom, fantomTestnet } from "viem/chains";
 
 const tracingApiClient = (chainId: ChainId) => createPublicClient({

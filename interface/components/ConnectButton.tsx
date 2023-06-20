@@ -4,7 +4,7 @@ import { Button, chakra, Flex, Image, useDisclosure } from "@chakra-ui/react";
 import { formatEther } from "viem";
 import { useAccount, useBalance, useChainId } from "wagmi";
 import { getContract } from "../config/contracts";
-import { ChainId } from "../pages/_app";
+import { ChainId } from "components/WagmiProvider";
 import AccountModal from "./AccountModal";
 import { Link } from "@chakra-ui/next-js";
 
