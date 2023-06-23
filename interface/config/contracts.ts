@@ -1,7 +1,7 @@
 import Canvas_ABI from "./abi/Canvas_ABI";
 import { erc20ABI } from "wagmi";
 import { Address } from "viem";
-import { ChainId } from "components/WagmiProvider";
+import { ChainId } from "components/providers/WagmiProvider";
 
 const contracts = {
   canvas: {

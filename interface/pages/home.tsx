@@ -1,17 +1,20 @@
 import React, { useMemo, useState } from "react";
-import Layout from "../components/layout";
-import Seo from "../components/seo";
+import Layout from "../components/layout/layout";
+import Seo from "../components/layout/seo";
 import { Logo } from "canvas-uikit";
-import { Button, Flex, Heading } from "@chakra-ui/react";
-import HeroBackground from "components/HeroBackground";
+import { Button, Divider, Flex, Heading, HStack, Stack, StackDivider, VStack } from "@chakra-ui/react";
+import HeroBackground from "components/home/HeroBackground";
 import { useRouter } from "next/router";
 import splashes from "../config/splashes";
 import { TypeAnimation } from "react-type-animation";
 import dynamic from "next/dynamic";
+import { ArrowForwardIcon } from "@chakra-ui/icons";
+import { Link } from "@chakra-ui/next-js";
+import { useAccount } from "wagmi";
 
 // const utmParameters = `?utm_source=starter&utm_medium=start-page&utm_campaign=default-starter`
 
-const DynamicAnimation = dynamic(() => import("components/LeavePageAnimation"), {
+const DynamicAnimation = dynamic(() => import("components/home/LeavePageAnimation"), {
   loading: () => <div />,
 })
 
@@ -22,6 +25,7 @@ const IndexPage = () => {
     () => splashes[Math.floor(Math.random() * splashes.length)],
     []
   );
+  const {isConnected} = useAccount();
   return (
     <Layout>
       <Seo title="Home" />
@@ -44,19 +48,22 @@ const IndexPage = () => {
             repeat={0}
           />
         </Heading>
-        <Button
-          style={{ cursor: "pointer", maxWidth: "800px" }}
-          size="xl"
-          mt="2"
-          onClick={() => {
-            setShow(true);
-            setTimeout(() => {
-              router.push("/");
-            }, 2500);
-          }}
-        >
-          Play
-        </Button>
+        <HStack mt={2} divider={<StackDivider />}>
+          <Button
+            style={{ cursor: "pointer", maxWidth: "800px" }}
+            size="xl"
+            onClick={() => {
+              setShow(true);
+              setTimeout(() => {
+                router.push("/");
+              }, 2500);
+            }}
+          >
+            Play
+          </Button>
+          {isConnected && (<Button variant={"outline"} size="xl" rightIcon={<ArrowForwardIcon/>} as={Link} href={"/dashboard"}>Dashboard</Button>)}
+
+        </HStack>
       </Flex>
     </Layout>
   );

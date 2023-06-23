@@ -1,17 +1,12 @@
 import { extendTheme } from '@chakra-ui/react'
-import dark from './colors/dark'
-import light from './colors/light'
 import components from './components'
-import shared from './colors/shared'
 import typography from './typography'
+import colors from './colors'
 
 export const theme = (mode: 'dark' | 'light') =>
   extendTheme({
     ...typography,
-    colors: {
-      ...(mode === 'dark' ? dark : light),
-      ...shared
-    },
+    colors: colors(mode),
     components,
     styles: {
       global: {

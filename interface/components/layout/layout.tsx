@@ -4,6 +4,7 @@ import Header from "./header";
 import {  Flex,  Link, Spacer } from "@chakra-ui/react";
 import { BsDiscord, BsTwitter } from "react-icons/bs";
 import { SiGitbook } from "react-icons/si";
+import links from "../../config/links";
 
 const Layout: React.FC<PropsWithChildren<any>> = ({ children }) => {
   return (
@@ -22,13 +23,13 @@ const Layout: React.FC<PropsWithChildren<any>> = ({ children }) => {
             svg: {
               fontSize: "2.5rem"}
           }}>
-            <Link href={"https://discord.gg/Z5mZ6EYerr"} isExternal>
+            <Link href={links.discord} isExternal>
               <BsDiscord/>
             </Link>
-            <Link href={"https://twitter.com/0xc4nvas"} isExternal>
+            <Link href={links.twitter} isExternal>
               <BsTwitter/>
             </Link>
-            <Link href={"https://canvas-2.gitbook.io/docs"} isExternal>
+            <Link href={links.gitbook} isExternal>
               <SiGitbook/>
             </Link>
 

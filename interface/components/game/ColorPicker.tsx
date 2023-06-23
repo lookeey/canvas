@@ -1,4 +1,4 @@
-import palettes from "../config/palettes";
+import palettes from "../../config/palettes";
 import { Button, Grid, GridItem } from "@chakra-ui/react";
 
 const ColorPicker: React.FC<{

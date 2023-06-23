@@ -1,24 +1,22 @@
-import React, { useMemo, useState } from "react";
-import styled from "@emotion/styled";
-import Layout from "../components/layout";
-import Seo from "../components/seo";
+import React from "react";
+import Layout from "../components/layout/layout";
+import Seo from "../components/layout/seo";
 import {
   Box,
-  Button, Card, CardBody, CardHeader,
   Flex,
   Grid,
   GridItem,
-  Heading, Image,
-  List,
-  ListIcon,
-  ListItem,
-  Text, VStack
+  Heading,
 } from "@chakra-ui/react";
+import Buy from "../components/dashboard/Buy";
+import Balances from "../components/dashboard/Balances";
+import Stake from "components/dashboard/Stake";
+import YourStakes from "../components/dashboard/YourStakes";
 
-const IndexPage = () => {
+const Dashboard = () => {
   return (
     <Layout>
-      <Seo title="Get Ink" />
+      <Seo title="Dashboard" />
       <Box
         opacity={0.3}
         position={"absolute"}
@@ -28,72 +26,39 @@ const IndexPage = () => {
         backgroundImage={"url(/ink_bg.svg)"}
         backgroundSize={"contain"}
         backgroundRepeat={"no-repeat"}
+        backgroundAttachment={"fixed"}
       />
-
-        <Flex
-          w={"100%"}
-          maxW={"container.xl"}
-          direction={"column"}
-          px={8}
-          mt={4}
-          gap={6}
-        >
-          <Heading>
-            Dashboard
-          </Heading>
-          <Grid
-            templateColumns={"repeat(3, 1fr)"}
+      <Flex
+        w={"100%"}
+        maxW={"container.xl"}
+        direction={"column"}
+        px={8}
+        mt={4}
+        gap={6}
+      >
+        <Heading>Dashboard</Heading>
+        <Grid templateColumns={["repeat(3, 1fr)"]} gap={6}>
+          <GridItem as={Flex} colSpan={[3, null, 1]} direction={"column"} gap={6}>
+            <Balances />
+            <Box
+              display={["none", null, "block"]}
+            >
+              <Buy/>
+            </Box>
+          </GridItem>
+          <GridItem as={Flex} colSpan={[3, null, 2]} direction={"column"} gap={6}>
+            <Stake />
+            <YourStakes/>
+          </GridItem>
+          <Box
+            display={["block", null, "none"]}
           >
-            <GridItem>
-              <Card bg={"bg"}>
-                <CardHeader>
-                  <Heading size={"md"}>
-                    Your Balances
-                  </Heading>
-                </CardHeader>
-                <CardBody>
-                  <Grid templateColumns={"auto 1fr"} columnGap={4} rowGap={3}>
-                    <GridItem>
-                      <Flex align={"center"} gap={"2"}>
-                        <Image src={"/ink_logo.png"} h={10} borderRadius={"full"}/>
-                        <Text fontWeight={"bold"}>
-                          Ink
-                        </Text>
-                      </Flex>
-                    </GridItem>
-                    <GridItem as={Flex} align={"center"}>
-                      <Text>
-                        123.123123
-                      </Text>
-                    </GridItem>
-
-                    <GridItem>
-                      <Flex align={"center"} gap={"2"}>
-                        <Image src={"/hue_logo.png"} h={10} borderRadius={"full"}/>
-                        <Text fontWeight={"bold"}>
-                          Hue
-                        </Text>
-                      </Flex>
-                    </GridItem>
-                    <GridItem as={Flex} align={"center"}>
-                      <Text>
-                        123.123123
-                      </Text>
-                    </GridItem>
-                  </Grid>
-                  <VStack spacing={4} align={"flex-start"}>
-
-
-
-                  </VStack>
-
-                </CardBody>
-              </Card>
-            </GridItem>
-          </Grid>
-        </Flex>
+            <Buy />
+          </Box>
+        </Grid>
+      </Flex>
     </Layout>
   );
 };
 
-export default IndexPage;
+export default Dashboard;

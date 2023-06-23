@@ -1,6 +1,6 @@
 import React from "react";
-import Layout from "../components/layout";
-import Seo from "../components/seo";
+import Layout from "../components/layout/layout";
+import Seo from "../components/layout/seo";
 import {
   Box,
   Button,
@@ -40,6 +40,7 @@ const IndexPage = () => {
           backgroundImage={"url(/ink_bg.svg)"}
           backgroundSize={"contain"}
           backgroundRepeat={"no-repeat"}
+          backgroundAttachment={"fixed"}
         />
         <Grid
           templateColumns={"repeat(2, 1fr)"}

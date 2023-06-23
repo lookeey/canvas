@@ -1,6 +1,6 @@
 import { erc20ABI, useChainId, useContractRead, useContractWrite, usePrepareContractWrite } from "wagmi";
 import contracts, { getContract } from "../config/contracts";
-import { ChainId } from "components/WagmiProvider";
+import { ChainId } from "components/providers/WagmiProvider";
 import { Address } from "viem";
 
 export const useAllowance = ({address, token, spender}: {address: Address, token: Address, spender: Address}) => {

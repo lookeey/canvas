@@ -1,10 +1,10 @@
-import EnterPageAnimation from "components/EnterPageAnimation";
+import EnterPageAnimation from "components/home/EnterPageAnimation";
 import { GetServerSideProps } from "next/types";
 import { setCookie, hasCookie } from "cookies-next";
 import React from "react";
 import styled from "@emotion/styled";
-import CanvasView from "components/CanvasView";
-import ColorPicker from "../components/ColorPicker";
+import CanvasView from "components/game/CanvasView";
+import ColorPicker from "../components/game/ColorPicker";
 
 const Wrapper = styled.div`
   position: fixed;

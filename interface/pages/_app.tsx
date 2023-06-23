@@ -5,7 +5,7 @@ import React from "react";
 import NextNProgress from "nextjs-progressbar";
 import dynamic from "next/dynamic";
 
-const WagmiProvider = dynamic(() => import("../components/WagmiProvider"), {
+const WagmiProvider = dynamic(() => import("../components/providers/WagmiProvider"), {
   ssr: false,
 });
 

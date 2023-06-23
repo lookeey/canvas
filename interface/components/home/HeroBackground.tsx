@@ -1,7 +1,7 @@
 import React, { ComponentProps, useEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
 import { keyframes } from "@chakra-ui/react";
-import { BottomLeftBlocks, TopRightBlocks } from "./SVG/Blocks";
+import { BottomLeftBlocks, TopRightBlocks } from "../SVG/Blocks";
 import {
   Box,
   chakra,

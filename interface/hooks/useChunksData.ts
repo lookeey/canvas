@@ -5,7 +5,7 @@ import { floorDiv, floorMod, range } from "../utils/bigint";
 import { applyPixels, uint8ArrayToImageData } from "../utils/drawChunk";
 import tracingApiClient from "../utils/tracingApiClient";
 import { useChainId } from "wagmi";
-import { ChainId } from "components/WagmiProvider";
+import { ChainId } from "components/providers/WagmiProvider";
 import { getContract } from "../config/contracts";
 import { CHUNK_SIZE } from "../config/chunk";
 
