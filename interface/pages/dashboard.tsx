@@ -32,11 +32,11 @@ const Dashboard = () => {
         w={"100%"}
         maxW={"container.xl"}
         direction={"column"}
-        px={8}
+        px={[2, null, 8]}
         mt={4}
         gap={6}
       >
-        <Heading>Dashboard</Heading>
+        <Heading ml={[4, null]}>Dashboard</Heading>
         <Grid templateColumns={["repeat(3, 1fr)"]} gap={6}>
           <GridItem as={Flex} colSpan={[3, null, 1]} direction={"column"} gap={6}>
             <Balances />
