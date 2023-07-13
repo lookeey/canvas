@@ -36,6 +36,7 @@
     "wagmi": "^1.0.9"
   },
   "devDependencies": {
+    "@svgr/webpack": "^8.0.1",
     "abitype": "^0.8.11",
     "eslint": "^7.24.0",
     "eslint-config-next": "latest",

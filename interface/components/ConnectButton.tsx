@@ -1,21 +1,16 @@
 import ConnectModal from "./ConnectModal";
 import React from "react";
-import { Button, chakra, Flex, Image, useDisclosure } from "@chakra-ui/react";
-import { formatEther } from "viem";
-import { useAccount, useBalance, useChainId } from "wagmi";
-import { getContract } from "../config/contracts";
-import { ChainId } from "components/providers/WagmiProvider";
+import {
+  Button,
+  ButtonProps, forwardRef,
+  useDisclosure
+} from "@chakra-ui/react";
+import { useAccount } from "wagmi";
 import AccountModal from "./AccountModal";
-import { Link } from "@chakra-ui/next-js";
 
-const ConnectButton = () => {
+const ConnectButton: React.FC<ButtonProps> = forwardRef((props, ref) => {
   const { address, isConnected } = useAccount();
-  const chainId = useChainId() as ChainId;
-  const { data: balance } = useBalance({
-    address,
-    token: getContract("ink", chainId).address,
-  });
-  const {isOpen, onClose, onOpen} = useDisclosure();
+  const { isOpen, onClose, onOpen } = useDisclosure();
   return (
     <>
       {isConnected ? (
@@ -23,23 +18,13 @@ const ConnectButton = () => {
       ) : (
         <ConnectModal isOpen={isOpen} onClose={onClose} />
       )}
-      <Flex borderRadius="md" align={"center"} bg={"gray3"} boxShadow={"lg"}>
-        {isConnected && (
-            <Flex as={Link} href={"/ink"} px={2} h={"100%"} align="center">
-              <Image src={"./ink_logo.png"} h={6} borderRadius={"full"} />
-              <chakra.b ml={2}>
-                {formatEther(balance?.value ?? 0n)} ink
-              </chakra.b>
-            </Flex>
-        )}
-        <Button  onClick={onOpen}>
-          {isConnected
-            ? `${address?.slice(0, 4)}...${address?.slice(-3)}`
-            : "Connect"}
-        </Button>
-      </Flex>
+      <Button {...props} onClick={onOpen} ref={ref}>
+        {isConnected
+          ? `${address?.slice(0, 4)}...${address?.slice(-3)}`
+          : "Connect"}
+      </Button>
     </>
   );
-}
+});
 
-export default ConnectButton
+export default ConnectButton;

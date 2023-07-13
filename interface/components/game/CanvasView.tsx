@@ -15,7 +15,7 @@ import useWindowSize from "../../hooks/useWindowSize";
 import useRenderCanvas from "../../hooks/useRenderCanvas";
 import { getContract } from "../../config/contracts";
 import { ChainId } from "components/providers/WagmiProvider";
-import ConnectButton from "../ConnectButton";
+import Account from "./Account";
 import { Link } from "@chakra-ui/next-js";
 import { Logo } from "canvas-uikit";
 import { SettingsIcon } from "@chakra-ui/icons";
@@ -142,7 +142,7 @@ const CanvasView: React.FC<CanvasViewProps> = (props: CanvasViewProps) => {
         direction={"column"}
         sx={{ "> *": { alignSelf: "flex-end" } }}
       >
-        <ConnectButton/>
+        <Account/>
         {selectedPixels.length > 0 && (
           <>
             <Box

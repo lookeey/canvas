@@ -1,5 +1,5 @@
 import React from 'react';
-import theme from '../src/theme';
+import { theme } from "../src/theme";
 import {ChakraProvider} from '@chakra-ui/react';
 import {withThemeProvider} from 'storybook-addon-theme-provider';
 

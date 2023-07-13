@@ -21,7 +21,8 @@
     "skipLibCheck": true,
     "baseUrl": "./src"
   },
-  "include": ["src", ".storybook/test.jsx",
+  "include": ["src",
+    "../.storybook/test.jsx",
     "src/theme"
   ],
   "exclude": ["node_modules", "dist", "src/stories"]

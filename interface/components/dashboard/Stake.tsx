@@ -3,26 +3,47 @@ import {
   Button,
   Card,
   CardBody,
-  CardHeader, Divider,
+  CardHeader,
+  Checkbox,
+  Divider,
   Flex,
   Grid,
   GridItem,
-  Heading, IconButton, Link, Table, Tbody, Td,
-  Text, Th,
-  Tooltip, Tr
+  Heading,
+  IconButton,
+  Link,
+  Slider,
+  SliderFilledTrack,
+  SliderMark,
+  SliderThumb,
+  SliderTrack,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Tooltip,
+  Tr,
 } from "@chakra-ui/react";
 import BalanceInput from "../input/BalanceInput";
 import { getContract } from "../../config/contracts";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import links from "../../config/links";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useAccount, useBalance, useChainId } from "wagmi";
 import { ChainId } from "../providers/WagmiProvider";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import { DatePicker } from "canvas-uikit";
 
 interface IFormInputs {
   amount: bigint;
+  date: Date;
+  lock: boolean;
+  lockMax: boolean;
 }
+
+const maxLockupPeriod = 60 * 60 * 24 * 30 * 6;
+const day = 60 * 60 * 24;
 
 const Stake = () => {
   const chainId = useChainId() as ChainId;
@@ -45,7 +66,19 @@ const Stake = () => {
     setValue,
   } = useForm<IFormInputs>();
 
-  const onSubmit = (data: IFormInputs) => {}
+  const onSubmit = (data: IFormInputs) => {};
+
+  const [maxLockup, setMaxLockup] = useState(Date.now() + maxLockupPeriod);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMaxLockup(Date.now() + maxLockupPeriod);
+    });
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <Card boxShadow={"lg"} w={"100%"} alignSelf={"flex-start"}>
@@ -70,7 +103,12 @@ const Stake = () => {
                 trigger={trigger}
                 control={control}
               />
-              <Button size={"lg"} w={"100%"} fontFamily={"heading"} isDisabled={Boolean(errors.amount)}>
+              <Button
+                size={"lg"}
+                w={"100%"}
+                fontFamily={"heading"}
+                isDisabled={Boolean(errors.amount)}
+              >
                 Stake {errors.amount?.message}
               </Button>
             </GridItem>
@@ -81,6 +119,54 @@ const Stake = () => {
                 borderRadius={"md"}
                 p={3}
               >
+                <Controller
+                  control={control}
+                  name="date"
+                  render={({ field }) => (
+                    <>
+                      <Flex justify="space-between" align="center" mb={2}>
+                        <Checkbox fontWeight='bold'>Lock until:</Checkbox>
+
+                        <DatePicker
+                          onDateSelected={(date) => field.onChange(date.date)}
+                          selected={field.value}
+                          isDisabled={true}
+                        />
+                      </Flex>
+
+                      <Flex gap={4} align='center'>
+                        <Text fontSize='xs'>months</Text>
+                        <Slider
+                          mt={4}
+                          mb={6}
+                          min={0}
+                          max={maxLockupPeriod}
+                          step={day}
+                          onChange={(val) => {
+                            field.onChange(new Date(Date.now() + val * 1000));
+                            if (val === maxLockupPeriod) null;
+                          }}
+                        >
+                          {/*<SliderMark value={0} mr={1} mt={2} fontSize='xs' textAlign='center' whiteSpace="nowrap">
+                          months
+                        </SliderMark>*/}
+                          {[1, 2, 3, 4, 5, 6].map((month) => (
+                            <SliderMark value={30 * day * month} transform='translateX(-50%)' mr={1} mt={2} fontSize='xs' textAlign='center' whiteSpace="nowrap" key={month}>
+                              {month}<br/>
+                            </SliderMark>
+                          ))}
+                          <SliderTrack height="2px" bg="blue2">
+                            <SliderFilledTrack bg="blue1" />
+                          </SliderTrack>
+                          <SliderThumb bg="blue2" />
+                        </Slider>
+                      </Flex>
+                      <Flex justify="flex-end" align="center" mb={2}>
+                        <Checkbox>Max lockup</Checkbox>
+                      </Flex>
+                    </>
+                  )}
+                />
                 <Heading fontFamily={"body"} size={"sm"}>
                   Estimated Results
                   <Tooltip
@@ -133,6 +219,6 @@ const Stake = () => {
       </CardBody>
     </Card>
   );
-}
+};
 
 export default Stake;

@@ -24,7 +24,8 @@ export function min(a: bigint, b: bigint): bigint {
 }
 
 export function parseValue(value: string, decimals?: number) {
-  return parseUnits(value.replace(/,/g, ".") as any, decimals ?? 18);
+  return parseUnits(value.replace(/,/g, ".") as any || "0" +
+    "", decimals ?? 18);
 }
 
 export const MaxUint256 = BigInt("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
