@@ -10,7 +10,7 @@ const Image = motion(_Image);
 
 const HoveringTokens = () => {
   const ref = React.useRef(null);
-  const isInView = useInView(ref, { margin: "-40px" });
+  const isInView = useInView(ref, { margin: "-20%" });
   const isSm = useBreakpointValue([true, false])
   return (
     <Box position="relative" ref={ref}>
@@ -29,7 +29,7 @@ const HoveringTokens = () => {
           src={hue}
           alt="hue"
           animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : -40 }}
-          transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
+          transition={{ duration: 1, ease: "easeInOut", delay: 0.2 }}
           width={isSm ? 200 : undefined}
         />
       </motion.div>
@@ -42,7 +42,7 @@ const HoveringTokens = () => {
           src={ink}
           alt="ink"
           animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : -40 }}
-          transition={{ duration: 1.5, ease: "easeOut" }}
+          transition={{ duration: 1, ease: "easeInOut" }}
           width={isSm ? 260 : undefined}
         />
       </motion.div>
