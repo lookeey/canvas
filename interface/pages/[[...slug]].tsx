@@ -26,7 +26,7 @@ export default Game;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   if (!hasCookie("first-visit", context)) {
-    setCookie("first-visit", "false", context);
+    // setCookie("first-visit", "false", context);
     return {
       redirect: {
         statusCode: 307,
