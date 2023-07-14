@@ -143,7 +143,7 @@ const IndexPage = () => {
             }}
           />
         </Box>
-        <Heading textAlign="center">
+        <Heading textAlign="center" px={6}>
           An infinite artboard
           <br /> on Fantom.
         </Heading>
