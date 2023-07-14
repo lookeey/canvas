@@ -1,5 +1,5 @@
 import {formatUnits} from "viem"
-import { commify } from "ethers/lib/utils.js";
+import {commify} from "@ethersproject/units"
 import { MaxUint256 } from "../utils/bigint";
 
 export interface BNFormatProps {

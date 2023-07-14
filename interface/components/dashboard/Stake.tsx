@@ -131,6 +131,7 @@ const Stake = () => {
                           onDateSelected={(date) => field.onChange(date.date)}
                           selected={field.value}
                           isDisabled={true}
+                          helpText={"End date"}
                         />
                       </Flex>
 
