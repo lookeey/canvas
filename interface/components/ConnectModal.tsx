@@ -60,7 +60,12 @@ const ConnectModal: React.FC<ConnectModalProps> = ({ isOpen, onClose }) => {
                   key={c.name}
                   variant="outline"
                   size={"lg"}
-                  onClick={() => connect({ connector })}
+                  onClick={() => {
+                    connect({ connector });
+                    if (c.name === "WalletConnect") {
+                      onClose();
+                    }
+                  }}
                   isDisabled={isLoading}
                 >
                   <Flex
