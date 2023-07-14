@@ -54,7 +54,7 @@ const Header: React.FC<{}> = ({}) => {
           listStyleType="none"
           gap={2}
         >
-          <ConnectButton />
+          {/*<ConnectButton />*/}
         </List>
       </Box>
     </Box>

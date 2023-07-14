@@ -84,8 +84,9 @@ const IndexPage = () => {
                 router.push("/");
               }, 2500);
             }}
+            isDisabled
           >
-            Play
+            Coming Soon
           </Button>
           {isConnected && (
             <Button
