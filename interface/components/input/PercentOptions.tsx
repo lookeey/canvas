@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Flex } from "@chakra-ui/react";
 import { QuickSelectProps } from "./types";
 import { formatUnits } from "viem";
+import { bi } from "../../utils/bigint";
 
 const PercentOptions: React.FC<{
   setValue: QuickSelectProps["setValue"];
@@ -29,7 +30,7 @@ const PercentOptions: React.FC<{
           size="sm"
           onClick={() => setValue(
             name,
-            formatUnits(max * BigInt(p) / 100n, decimals),
+            formatUnits(max * bi(p) / 100n, decimals),
             {
               shouldValidate: true,
             }

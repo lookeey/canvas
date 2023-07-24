@@ -62,9 +62,6 @@ const ConnectModal: React.FC<ConnectModalProps> = ({ isOpen, onClose }) => {
                   size={"lg"}
                   onClick={() => {
                     connect({ connector });
-                    if (c.name === "WalletConnect") {
-                      onClose();
-                    }
                   }}
                   isDisabled={isLoading}
                 >

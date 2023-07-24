@@ -1,11 +1,11 @@
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { fantom, fantomTestnet } from "viem/chains";
+import { arbitrum, arbitrumGoerli, hardhat } from "viem/chains";
 import { publicProvider } from "@wagmi/core/providers/public";
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
 
 const { chains, publicClient } = configureChains(
-  process.env.NODE_ENV === "production" ? [fantom] : [fantomTestnet, fantom],
+  process.env.NODE_ENV === "production" ? [arbitrum] : [arbitrumGoerli, arbitrum, hardhat],
   [publicProvider()]
 );
 

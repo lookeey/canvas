@@ -12,7 +12,7 @@ import {
   Stack,
   Tooltip,
 } from "@chakra-ui/react";
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Address, erc20ABI, useBalance, useContractRead } from "wagmi";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import BNFormat from "../BNFormat";
@@ -22,6 +22,7 @@ import { formatUnits, parseUnits } from "viem";
 import { Control, FieldValues, useController } from "react-hook-form";
 import PercentOptions from "./PercentOptions";
 import { QuickSelectProps } from "./types";
+import { throttle } from "lodash";
 
 export const ERROR_OVER_BALANCE = "overBalance";
 export const ERROR_OVER_ALLOWANCE = "overAllowance";
@@ -102,6 +103,9 @@ const BalanceInput = forwardRef(
     const maxLtBal = max === undefined ? false : max < (balance?.value ?? 0n);
     const maxAmount = maxLtBal ? max : balance?.value ?? 0n;
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const throttledTrigger = useCallback(throttle(() => trigger(name), 300), [])
+
     // @ts-ignore
     return (
       <FormControl isInvalid={isOverBalance}>
@@ -120,7 +124,7 @@ const BalanceInput = forwardRef(
                   );
                   if (regex.test(e.target.value) || e.target.value === "") {
                     field.onChange(e.target.value);
-                    trigger(name);
+                    throttledTrigger();
                   }
                 }}
               />
@@ -129,7 +133,7 @@ const BalanceInput = forwardRef(
                 <InputRightElement>
                   <Tooltip
                     label={`Current Allowance: ${formatUnits(
-                      balance?.value ?? 0n,
+                      allowance ?? 0n,
                       balance?.decimals ?? 18
                     )}`}
                   >
